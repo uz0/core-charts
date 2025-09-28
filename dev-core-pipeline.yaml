@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: dev-core-pipeline
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'git@github.com:uz0/core-pipeline.git'
+    targetRevision: main
+    path: charts/core-pipeline
+    helm:
+      valueFiles:
+        - values-dev.yaml
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: dev-core
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
