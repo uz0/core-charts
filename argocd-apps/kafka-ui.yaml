@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"argoproj.io/v1alpha1","kind":"Application","metadata":{"annotations":{},"name":"kafka-ui","namespace":"argocd"},"spec":{"destination":{"namespace":"kafka","server":"https://kubernetes.default.svc"},"project":"default","source":{"chart":"kafka-ui","helm":{"values":"envs:\n  config:\n    KAFKA_CLUSTERS_0_NAME: kafka-cluster\n    KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-controller-headless:9092\nservice:\n  type: NodePort\n"},"repoURL":"https://provectus.github.io/kafka-ui-charts","targetRevision":"0.7.5"},"syncPolicy":{"automated":{"prune":true,"selfHeal":true}}}}
+    link.argocd.argoproj.io/external-link: https://kafka.dev.theedgestory.org
+  name: kafka-ui
+  namespace: argocd
+spec:
+  destination:
+    namespace: kafka
+    server: https://kubernetes.default.svc
+  project: data
+  source:
+    chart: kafka-ui
+    helm:
+      values: |
+        envs:
+          config:
+            KAFKA_CLUSTERS_0_NAME: kafka-cluster
+            KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-controller-headless:9092
+        service:
+          type: NodePort
+    repoURL: https://provectus.github.io/kafka-ui-charts
+    targetRevision: 0.7.5
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

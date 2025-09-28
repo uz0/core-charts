@@ -1,0 +1,33 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"argoproj.io/v1alpha1","kind":"Application","metadata":{"annotations":{},"name":"core-pipeline-prod","namespace":"argocd"},"spec":{"destination":{"namespace":"prod-core","server":"https://kubernetes.default.svc"},"project":"default","source":{"helm":{"values":"image:\n  repository: nginx\n  tag: latest\nservice:\n  port: 8080\nenv: prod\nreplicaCount: 2\n"},"path":"charts/core-pipeline","repoURL":"https://github.com/uz0/core-charts","targetRevision":"HEAD"},"syncPolicy":{"automated":{"prune":false,"selfHeal":false},"syncOptions":["CreateNamespace=true"]}}}
+    link.argocd.argoproj.io/external-link: https://core-pipeline.theedgestory.org
+  name: core-pipeline-prod
+  namespace: argocd
+spec:
+  destination:
+    namespace: prod-core
+    server: https://kubernetes.default.svc
+  project: applications
+  source:
+    helm:
+      values: |
+        image:
+          repository: nginx
+          tag: latest
+        service:
+          port: 8080
+        env: prod
+        replicaCount: 2
+    path: charts/core-pipeline
+    repoURL: https://github.com/uz0/core-charts
+    targetRevision: add-dev-ui
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+    syncOptions:
+    - CreateNamespace=true

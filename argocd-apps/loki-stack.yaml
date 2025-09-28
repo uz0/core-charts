@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"argoproj.io/v1alpha1","kind":"Application","metadata":{"annotations":{"link.argocd.argoproj.io/external-link":"https://grafana.dev.theedgestory.org/explore"},"name":"loki-stack","namespace":"argocd"},"spec":{"destination":{"namespace":"monitoring","server":"https://kubernetes.default.svc"},"project":"monitoring","source":{"chart":"loki-stack","helm":{"values":"loki:\n  auth_enabled: false\npromtail:\n  enabled: true\ngrafana:\n  enabled: false\n"},"repoURL":"https://grafana.github.io/helm-charts","targetRevision":"2.10.0"},"syncPolicy":{"syncOptions":["CreateNamespace=true"]}}}
+    link.argocd.argoproj.io/external-link: https://grafana.dev.theedgestory.org/explore
+  name: loki-stack
+  namespace: argocd
+spec:
+  destination:
+    namespace: monitoring
+    server: https://kubernetes.default.svc
+  project: monitoring
+  source:
+    chart: loki-stack
+    helm:
+      values: |
+        loki:
+          auth_enabled: false
+        promtail:
+          enabled: true
+        grafana:
+          enabled: false
+    repoURL: https://grafana.github.io/helm-charts
+    targetRevision: 2.10.0
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true

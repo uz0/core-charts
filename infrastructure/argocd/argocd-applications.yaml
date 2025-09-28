@@ -1,0 +1,1915 @@
+apiVersion: v1
+items:
+- apiVersion: argoproj.io/v1alpha1
+  kind: Application
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"argoproj.io/v1alpha1","kind":"Application","metadata":{"annotations":{},"name":"cert-manager","namespace":"argocd"},"spec":{"destination":{"namespace":"cert-manager","server":"https://kubernetes.default.svc"},"project":"default","source":{"chart":"cert-manager","helm":{"values":"installCRDs: true\n"},"repoURL":"https://charts.jetstack.io","targetRevision":"v1.13.0"},"syncPolicy":{"automated":{"prune":true,"selfHeal":true},"syncOptions":["CreateNamespace=true"]}}}
+      link.argocd.argoproj.io/external-link: https://cert-manager.io/docs/
+    creationTimestamp: "2025-09-28T23:32:28Z"
+    generation: 31
+    name: cert-manager
+    namespace: argocd
+    resourceVersion: "19618"
+    uid: cdf301fd-4792-46a1-a94e-bf0a35f2b9bc
+  spec:
+    destination:
+      namespace: cert-manager
+      server: https://kubernetes.default.svc
+    project: infrastructure
+    source:
+      chart: cert-manager
+      helm:
+        values: |
+          installCRDs: true
+      repoURL: https://charts.jetstack.io
+      targetRevision: v1.13.0
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      syncOptions:
+      - CreateNamespace=true
+  status:
+    controllerNamespace: argocd
+    health:
+      lastTransitionTime: "2025-09-28T23:32:44Z"
+      status: Healthy
+    history:
+    - deployStartedAt: "2025-09-28T23:32:29Z"
+      deployedAt: "2025-09-28T23:32:58Z"
+      id: 0
+      initiatedBy:
+        automated: true
+      revision: v1.13.0
+      source:
+        chart: cert-manager
+        helm:
+          values: |
+            installCRDs: true
+        repoURL: https://charts.jetstack.io
+        targetRevision: v1.13.0
+    operationState:
+      finishedAt: "2025-09-28T23:32:58Z"
+      message: successfully synced (no more tasks)
+      operation:
+        initiatedBy:
+          automated: true
+        retry:
+          limit: 5
+        sync:
+          prune: true
+          revision: v1.13.0
+          syncOptions:
+          - CreateNamespace=true
+      phase: Succeeded
+      startedAt: "2025-09-28T23:32:29Z"
+      syncResult:
+        resources:
+        - group: ""
+          hookPhase: Succeeded
+          kind: ServiceAccount
+          message: 'serviceaccount/cert-manager-cainjector configured. Warning: resource
+            serviceaccounts/cert-manager-cainjector is missing the kubectl.kubernetes.io/last-applied-configuration
+            annotation which is required by  apply.  apply should only be used on
+            resources created declaratively by either  create --save-config or  apply.
+            The missing annotation will be patched automatically.'
+          name: cert-manager-cainjector
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: ""
+          hookPhase: Succeeded
+          kind: ServiceAccount
+          message: 'serviceaccount/cert-manager configured. Warning: resource serviceaccounts/cert-manager
+            is missing the kubectl.kubernetes.io/last-applied-configuration annotation
+            which is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: cert-manager
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: ""
+          hookPhase: Succeeded
+          kind: ServiceAccount
+          message: 'serviceaccount/cert-manager-webhook configured. Warning: resource
+            serviceaccounts/cert-manager-webhook is missing the kubectl.kubernetes.io/last-applied-configuration
+            annotation which is required by  apply.  apply should only be used on
+            resources created declaratively by either  create --save-config or  apply.
+            The missing annotation will be patched automatically.'
+          name: cert-manager-webhook
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: ""
+          hookPhase: Succeeded
+          kind: ConfigMap
+          message: configmap/cert-manager created
+          name: cert-manager
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: ""
+          hookPhase: Succeeded
+          kind: ConfigMap
+          message: configmap/cert-manager-webhook created
+          name: cert-manager-webhook
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: apiextensions.k8s.io
+          hookPhase: Succeeded
+          kind: CustomResourceDefinition
+          message: CRD is healthy
+          name: orders.acme.cert-manager.io
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: apiextensions.k8s.io
+          hookPhase: Succeeded
+          kind: CustomResourceDefinition
+          message: CRD is healthy
+          name: certificaterequests.cert-manager.io
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: apiextensions.k8s.io
+          hookPhase: Succeeded
+          kind: CustomResourceDefinition
+          message: CRD is healthy
+          name: certificates.cert-manager.io
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: apiextensions.k8s.io
+          hookPhase: Succeeded
+          kind: CustomResourceDefinition
+          message: CRD is healthy
+          name: issuers.cert-manager.io
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: apiextensions.k8s.io
+          hookPhase: Succeeded
+          kind: CustomResourceDefinition
+          message: CRD is healthy
+          name: clusterissuers.cert-manager.io
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: apiextensions.k8s.io
+          hookPhase: Succeeded
+          kind: CustomResourceDefinition
+          message: CRD is healthy
+          name: challenges.acme.cert-manager.io
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: rbac.authorization.k8s.io
+          hookPhase: Succeeded
+          kind: ClusterRole
+          message: 'clusterrole.rbac.authorization.k8s.io/cert-manager-cluster-view
+            reconciled. reconciliation required update. clusterrole.rbac.authorization.k8s.io/cert-manager-cluster-view
+            configured. Warning: resource clusterroles/cert-manager-cluster-view is
+            missing the kubectl.kubernetes.io/last-applied-configuration annotation
+            which is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: cert-manager-cluster-view
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: rbac.authorization.k8s.io
+          hookPhase: Succeeded
+          kind: ClusterRole
+          message: 'clusterrole.rbac.authorization.k8s.io/cert-manager-controller-orders
+            reconciled. reconciliation required update. clusterrole.rbac.authorization.k8s.io/cert-manager-controller-orders
+            configured. Warning: resource clusterroles/cert-manager-controller-orders
+            is missing the kubectl.kubernetes.io/last-applied-configuration annotation
+            which is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: cert-manager-controller-orders
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: rbac.authorization.k8s.io
+          hookPhase: Succeeded
+          kind: ClusterRole
+          message: 'clusterrole.rbac.authorization.k8s.io/cert-manager-controller-issuers
+            reconciled. reconciliation required update. clusterrole.rbac.authorization.k8s.io/cert-manager-controller-issuers
+            configured. Warning: resource clusterroles/cert-manager-controller-issuers
+            is missing the kubectl.kubernetes.io/last-applied-configuration annotation
+            which is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: cert-manager-controller-issuers
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: rbac.authorization.k8s.io
+          hookPhase: Succeeded
+          kind: ClusterRole
+          message: 'clusterrole.rbac.authorization.k8s.io/cert-manager-webhook:subjectaccessreviews
+            reconciled. reconciliation required update. clusterrole.rbac.authorization.k8s.io/cert-manager-webhook:subjectaccessreviews
+            configured. Warning: resource clusterroles/cert-manager-webhook:subjectaccessreviews
+            is missing the kubectl.kubernetes.io/last-applied-configuration annotation
+            which is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: cert-manager-webhook:subjectaccessreviews
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: rbac.authorization.k8s.io
+          hookPhase: Succeeded
+          kind: ClusterRole
+          message: 'clusterrole.rbac.authorization.k8s.io/cert-manager-cainjector
+            reconciled. reconciliation required update. clusterrole.rbac.authorization.k8s.io/cert-manager-cainjector
+            configured. Warning: resource clusterroles/cert-manager-cainjector is
+            missing the kubectl.kubernetes.io/last-applied-configuration annotation
+            which is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: cert-manager-cainjector
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: rbac.authorization.k8s.io
+          hookPhase: Succeeded
+          kind: ClusterRole
+          message: 'clusterrole.rbac.authorization.k8s.io/cert-manager-controller-ingress-shim
+            reconciled. reconciliation required update. clusterrole.rbac.authorization.k8s.io/cert-manager-controller-ingress-shim
+            configured. Warning: resource clusterroles/cert-manager-controller-ingress-shim
+            is missing the kubectl.kubernetes.io/last-applied-configuration annotation
+            which is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: cert-manager-controller-ingress-shim
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: rbac.authorization.k8s.io
+          hookPhase: Succeeded
+          kind: ClusterRole
+          message: 'clusterrole.rbac.authorization.k8s.io/cert-manager-controller-challenges
+            reconciled. reconciliation required update. clusterrole.rbac.authorization.k8s.io/cert-manager-controller-challenges
+            configured. Warning: resource clusterroles/cert-manager-controller-challenges
+            is missing the kubectl.kubernetes.io/last-applied-configuration annotation
+            which is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: cert-manager-controller-challenges
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: rbac.authorization.k8s.io
+          hookPhase: Succeeded
+          kind: ClusterRole
+          message: 'clusterrole.rbac.authorization.k8s.io/cert-manager-view reconciled.
+            reconciliation required update. clusterrole.rbac.authorization.k8s.io/cert-manager-view
+            configured. Warning: resource clusterroles/cert-manager-view is missing
+            the kubectl.kubernetes.io/last-applied-configuration annotation which
+            is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: cert-manager-view
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: rbac.authorization.k8s.io
+          hookPhase: Succeeded
+          kind: ClusterRole
+          message: 'clusterrole.rbac.authorization.k8s.io/cert-manager-controller-clusterissuers
+            reconciled. reconciliation required update. clusterrole.rbac.authorization.k8s.io/cert-manager-controller-clusterissuers
+            configured. Warning: resource clusterroles/cert-manager-controller-clusterissuers
+            is missing the kubectl.kubernetes.io/last-applied-configuration annotation
+            which is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: cert-manager-controller-clusterissuers
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: rbac.authorization.k8s.io
+          hookPhase: Succeeded
+          kind: ClusterRole
+          message: 'clusterrole.rbac.authorization.k8s.io/cert-manager-controller-certificates
+            reconciled. reconciliation required update. clusterrole.rbac.authorization.k8s.io/cert-manager-controller-certificates
+            configured. Warning: resource clusterroles/cert-manager-controller-certificates
+            is missing the kubectl.kubernetes.io/last-applied-configuration annotation
+            which is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: cert-manager-controller-certificates
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: rbac.authorization.k8s.io
+          hookPhase: Succeeded
+          kind: ClusterRole
+          message: 'clusterrole.rbac.authorization.k8s.io/cert-manager-edit reconciled.
+            reconciliation required update. clusterrole.rbac.authorization.k8s.io/cert-manager-edit
+            configured. Warning: resource clusterroles/cert-manager-edit is missing
+            the kubectl.kubernetes.io/last-applied-configuration annotation which
+            is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: cert-manager-edit
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: rbac.authorization.k8s.io
+          hookPhase: Succeeded
+          kind: ClusterRole
+          message: 'clusterrole.rbac.authorization.k8s.io/cert-manager-controller-certificatesigningrequests
+            reconciled. reconciliation required update. clusterrole.rbac.authorization.k8s.io/cert-manager-controller-certificatesigningrequests
+            configured. Warning: resource clusterroles/cert-manager-controller-certificatesigningrequests
+            is missing the kubectl.kubernetes.io/last-applied-configuration annotation
+            which is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: cert-manager-controller-certificatesigningrequests
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: rbac.authorization.k8s.io
+          hookPhase: Succeeded
+          kind: ClusterRole
+          message: 'clusterrole.rbac.authorization.k8s.io/cert-manager-controller-approve:cert-manager-io
+            reconciled. reconciliation required update. clusterrole.rbac.authorization.k8s.io/cert-manager-controller-approve:cert-manager-io
+            configured. Warning: resource clusterroles/cert-manager-controller-approve:cert-manager-io
+            is missing the kubectl.kubernetes.io/last-applied-configuration annotation
+            which is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: cert-manager-controller-approve:cert-manager-io
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: rbac.authorization.k8s.io
+          hookPhase: Succeeded
+          kind: ClusterRoleBinding
+          message: 'clusterrolebinding.rbac.authorization.k8s.io/cert-manager-controller-certificates
+            reconciled. reconciliation required update. clusterrolebinding.rbac.authorization.k8s.io/cert-manager-controller-certificates
+            configured. Warning: resource clusterrolebindings/cert-manager-controller-certificates
+            is missing the kubectl.kubernetes.io/last-applied-configuration annotation
+            which is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: cert-manager-controller-certificates
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: rbac.authorization.k8s.io
+          hookPhase: Succeeded
+          kind: ClusterRoleBinding
+          message: 'clusterrolebinding.rbac.authorization.k8s.io/cert-manager-controller-ingress-shim
+            reconciled. reconciliation required update. clusterrolebinding.rbac.authorization.k8s.io/cert-manager-controller-ingress-shim
+            configured. Warning: resource clusterrolebindings/cert-manager-controller-ingress-shim
+            is missing the kubectl.kubernetes.io/last-applied-configuration annotation
+            which is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: cert-manager-controller-ingress-shim
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: rbac.authorization.k8s.io
+          hookPhase: Succeeded
+          kind: ClusterRoleBinding
+          message: 'clusterrolebinding.rbac.authorization.k8s.io/cert-manager-cainjector
+            reconciled. reconciliation required update. clusterrolebinding.rbac.authorization.k8s.io/cert-manager-cainjector
+            configured. Warning: resource clusterrolebindings/cert-manager-cainjector
+            is missing the kubectl.kubernetes.io/last-applied-configuration annotation
+            which is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: cert-manager-cainjector
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: rbac.authorization.k8s.io
+          hookPhase: Succeeded
+          kind: ClusterRoleBinding
+          message: 'clusterrolebinding.rbac.authorization.k8s.io/cert-manager-controller-certificatesigningrequests
+            reconciled. reconciliation required update. clusterrolebinding.rbac.authorization.k8s.io/cert-manager-controller-certificatesigningrequests
+            configured. Warning: resource clusterrolebindings/cert-manager-controller-certificatesigningrequests
+            is missing the kubectl.kubernetes.io/last-applied-configuration annotation
+            which is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: cert-manager-controller-certificatesigningrequests
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: rbac.authorization.k8s.io
+          hookPhase: Succeeded
+          kind: ClusterRoleBinding
+          message: 'clusterrolebinding.rbac.authorization.k8s.io/cert-manager-controller-orders
+            reconciled. reconciliation required update. clusterrolebinding.rbac.authorization.k8s.io/cert-manager-controller-orders
+            configured. Warning: resource clusterrolebindings/cert-manager-controller-orders
+            is missing the kubectl.kubernetes.io/last-applied-configuration annotation
+            which is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: cert-manager-controller-orders
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: rbac.authorization.k8s.io
+          hookPhase: Succeeded
+          kind: ClusterRoleBinding
+          message: 'clusterrolebinding.rbac.authorization.k8s.io/cert-manager-controller-clusterissuers
+            reconciled. reconciliation required update. clusterrolebinding.rbac.authorization.k8s.io/cert-manager-controller-clusterissuers
+            configured. Warning: resource clusterrolebindings/cert-manager-controller-clusterissuers
+            is missing the kubectl.kubernetes.io/last-applied-configuration annotation
+            which is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: cert-manager-controller-clusterissuers
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: rbac.authorization.k8s.io
+          hookPhase: Succeeded
+          kind: ClusterRoleBinding
+          message: 'clusterrolebinding.rbac.authorization.k8s.io/cert-manager-webhook:subjectaccessreviews
+            reconciled. reconciliation required update. clusterrolebinding.rbac.authorization.k8s.io/cert-manager-webhook:subjectaccessreviews
+            configured. Warning: resource clusterrolebindings/cert-manager-webhook:subjectaccessreviews
+            is missing the kubectl.kubernetes.io/last-applied-configuration annotation
+            which is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: cert-manager-webhook:subjectaccessreviews
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: rbac.authorization.k8s.io
+          hookPhase: Succeeded
+          kind: ClusterRoleBinding
+          message: 'clusterrolebinding.rbac.authorization.k8s.io/cert-manager-controller-issuers
+            reconciled. reconciliation required update. clusterrolebinding.rbac.authorization.k8s.io/cert-manager-controller-issuers
+            configured. Warning: resource clusterrolebindings/cert-manager-controller-issuers
+            is missing the kubectl.kubernetes.io/last-applied-configuration annotation
+            which is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: cert-manager-controller-issuers
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: rbac.authorization.k8s.io
+          hookPhase: Succeeded
+          kind: ClusterRoleBinding
+          message: 'clusterrolebinding.rbac.authorization.k8s.io/cert-manager-controller-approve:cert-manager-io
+            reconciled. reconciliation required update. clusterrolebinding.rbac.authorization.k8s.io/cert-manager-controller-approve:cert-manager-io
+            configured. Warning: resource clusterrolebindings/cert-manager-controller-approve:cert-manager-io
+            is missing the kubectl.kubernetes.io/last-applied-configuration annotation
+            which is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: cert-manager-controller-approve:cert-manager-io
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: rbac.authorization.k8s.io
+          hookPhase: Succeeded
+          kind: ClusterRoleBinding
+          message: 'clusterrolebinding.rbac.authorization.k8s.io/cert-manager-controller-challenges
+            reconciled. reconciliation required update. clusterrolebinding.rbac.authorization.k8s.io/cert-manager-controller-challenges
+            configured. Warning: resource clusterrolebindings/cert-manager-controller-challenges
+            is missing the kubectl.kubernetes.io/last-applied-configuration annotation
+            which is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: cert-manager-controller-challenges
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: rbac.authorization.k8s.io
+          hookPhase: Succeeded
+          kind: Role
+          message: 'role.rbac.authorization.k8s.io/cert-manager:leaderelection reconciled.
+            reconciliation required update. role.rbac.authorization.k8s.io/cert-manager:leaderelection
+            configured. Warning: resource roles/cert-manager:leaderelection is missing
+            the kubectl.kubernetes.io/last-applied-configuration annotation which
+            is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: cert-manager:leaderelection
+          namespace: kube-system
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: rbac.authorization.k8s.io
+          hookPhase: Succeeded
+          kind: Role
+          message: 'role.rbac.authorization.k8s.io/cert-manager-webhook:dynamic-serving
+            reconciled. reconciliation required update. role.rbac.authorization.k8s.io/cert-manager-webhook:dynamic-serving
+            configured. Warning: resource roles/cert-manager-webhook:dynamic-serving
+            is missing the kubectl.kubernetes.io/last-applied-configuration annotation
+            which is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: cert-manager-webhook:dynamic-serving
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: rbac.authorization.k8s.io
+          hookPhase: Succeeded
+          kind: Role
+          message: 'role.rbac.authorization.k8s.io/cert-manager-cainjector:leaderelection
+            reconciled. reconciliation required update. role.rbac.authorization.k8s.io/cert-manager-cainjector:leaderelection
+            configured. Warning: resource roles/cert-manager-cainjector:leaderelection
+            is missing the kubectl.kubernetes.io/last-applied-configuration annotation
+            which is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: cert-manager-cainjector:leaderelection
+          namespace: kube-system
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: rbac.authorization.k8s.io
+          hookPhase: Succeeded
+          kind: RoleBinding
+          message: 'rolebinding.rbac.authorization.k8s.io/cert-manager:leaderelection
+            reconciled. reconciliation required update. rolebinding.rbac.authorization.k8s.io/cert-manager:leaderelection
+            configured. Warning: resource rolebindings/cert-manager:leaderelection
+            is missing the kubectl.kubernetes.io/last-applied-configuration annotation
+            which is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: cert-manager:leaderelection
+          namespace: kube-system
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: rbac.authorization.k8s.io
+          hookPhase: Succeeded
+          kind: RoleBinding
+          message: 'rolebinding.rbac.authorization.k8s.io/cert-manager-webhook:dynamic-serving
+            reconciled. reconciliation required update. rolebinding.rbac.authorization.k8s.io/cert-manager-webhook:dynamic-serving
+            configured. Warning: resource rolebindings/cert-manager-webhook:dynamic-serving
+            is missing the kubectl.kubernetes.io/last-applied-configuration annotation
+            which is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: cert-manager-webhook:dynamic-serving
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: rbac.authorization.k8s.io
+          hookPhase: Succeeded
+          kind: RoleBinding
+          message: 'rolebinding.rbac.authorization.k8s.io/cert-manager-cainjector:leaderelection
+            reconciled. reconciliation required update. rolebinding.rbac.authorization.k8s.io/cert-manager-cainjector:leaderelection
+            configured. Warning: resource rolebindings/cert-manager-cainjector:leaderelection
+            is missing the kubectl.kubernetes.io/last-applied-configuration annotation
+            which is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: cert-manager-cainjector:leaderelection
+          namespace: kube-system
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: ""
+          hookPhase: Succeeded
+          kind: Service
+          message: 'service/cert-manager configured. Warning: resource services/cert-manager
+            is missing the kubectl.kubernetes.io/last-applied-configuration annotation
+            which is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: cert-manager
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: ""
+          hookPhase: Succeeded
+          kind: Service
+          message: 'service/cert-manager-webhook configured. Warning: resource services/cert-manager-webhook
+            is missing the kubectl.kubernetes.io/last-applied-configuration annotation
+            which is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: cert-manager-webhook
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: apps
+          hookPhase: Succeeded
+          images:
+          - quay.io/jetstack/cert-manager-controller:v1.13.0
+          kind: Deployment
+          message: 'deployment.apps/cert-manager configured. Warning: resource deployments/cert-manager
+            is missing the kubectl.kubernetes.io/last-applied-configuration annotation
+            which is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: cert-manager
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: apps
+          hookPhase: Succeeded
+          images:
+          - quay.io/jetstack/cert-manager-webhook:v1.13.0
+          kind: Deployment
+          message: 'deployment.apps/cert-manager-webhook configured. Warning: resource
+            deployments/cert-manager-webhook is missing the kubectl.kubernetes.io/last-applied-configuration
+            annotation which is required by  apply.  apply should only be used on
+            resources created declaratively by either  create --save-config or  apply.
+            The missing annotation will be patched automatically.'
+          name: cert-manager-webhook
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: apps
+          hookPhase: Succeeded
+          images:
+          - quay.io/jetstack/cert-manager-cainjector:v1.13.0
+          kind: Deployment
+          message: 'deployment.apps/cert-manager-cainjector configured. Warning: resource
+            deployments/cert-manager-cainjector is missing the kubectl.kubernetes.io/last-applied-configuration
+            annotation which is required by  apply.  apply should only be used on
+            resources created declaratively by either  create --save-config or  apply.
+            The missing annotation will be patched automatically.'
+          name: cert-manager-cainjector
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: admissionregistration.k8s.io
+          hookPhase: Succeeded
+          kind: ValidatingWebhookConfiguration
+          message: 'validatingwebhookconfiguration.admissionregistration.k8s.io/cert-manager-webhook
+            configured. Warning: resource validatingwebhookconfigurations/cert-manager-webhook
+            is missing the kubectl.kubernetes.io/last-applied-configuration annotation
+            which is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: cert-manager-webhook
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: admissionregistration.k8s.io
+          hookPhase: Succeeded
+          kind: MutatingWebhookConfiguration
+          message: 'mutatingwebhookconfiguration.admissionregistration.k8s.io/cert-manager-webhook
+            configured. Warning: resource mutatingwebhookconfigurations/cert-manager-webhook
+            is missing the kubectl.kubernetes.io/last-applied-configuration annotation
+            which is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: cert-manager-webhook
+          namespace: cert-manager
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: ""
+          hookPhase: Succeeded
+          hookType: PostSync
+          kind: ServiceAccount
+          message: cert-manager-startupapicheck created
+          name: cert-manager-startupapicheck
+          namespace: cert-manager
+          syncPhase: PostSync
+          version: v1
+        - group: rbac.authorization.k8s.io
+          hookPhase: Succeeded
+          hookType: PostSync
+          kind: Role
+          message: cert-manager-startupapicheck:create-cert created
+          name: cert-manager-startupapicheck:create-cert
+          namespace: cert-manager
+          syncPhase: PostSync
+          version: v1
+        - group: rbac.authorization.k8s.io
+          hookPhase: Succeeded
+          hookType: PostSync
+          kind: RoleBinding
+          message: cert-manager-startupapicheck:create-cert created
+          name: cert-manager-startupapicheck:create-cert
+          namespace: cert-manager
+          syncPhase: PostSync
+          version: v1
+        - group: batch
+          hookPhase: Succeeded
+          hookType: PostSync
+          images:
+          - quay.io/jetstack/cert-manager-ctl:v1.13.0
+          kind: Job
+          message: Reached expected number of succeeded pods
+          name: cert-manager-startupapicheck
+          namespace: cert-manager
+          syncPhase: PostSync
+          version: v1
+        revision: v1.13.0
+        source:
+          chart: cert-manager
+          helm:
+            values: |
+              installCRDs: true
+          repoURL: https://charts.jetstack.io
+          targetRevision: v1.13.0
+    reconciledAt: "2025-09-28T23:51:19Z"
+    resourceHealthSource: appTree
+    resources:
+    - kind: ConfigMap
+      name: cert-manager
+      namespace: cert-manager
+      status: Synced
+      version: v1
+    - kind: ConfigMap
+      name: cert-manager-webhook
+      namespace: cert-manager
+      status: Synced
+      version: v1
+    - kind: Service
+      name: cert-manager
+      namespace: cert-manager
+      status: Synced
+      version: v1
+    - kind: Service
+      name: cert-manager-webhook
+      namespace: cert-manager
+      status: Synced
+      version: v1
+    - kind: ServiceAccount
+      name: cert-manager
+      namespace: cert-manager
+      status: Synced
+      version: v1
+    - kind: ServiceAccount
+      name: cert-manager-cainjector
+      namespace: cert-manager
+      status: Synced
+      version: v1
+    - kind: ServiceAccount
+      name: cert-manager-webhook
+      namespace: cert-manager
+      status: Synced
+      version: v1
+    - group: admissionregistration.k8s.io
+      kind: MutatingWebhookConfiguration
+      name: cert-manager-webhook
+      status: Synced
+      version: v1
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+      name: cert-manager-webhook
+      status: Synced
+      version: v1
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+      name: certificaterequests.cert-manager.io
+      status: Synced
+      version: v1
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+      name: certificates.cert-manager.io
+      status: Synced
+      version: v1
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+      name: challenges.acme.cert-manager.io
+      status: Synced
+      version: v1
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+      name: clusterissuers.cert-manager.io
+      status: Synced
+      version: v1
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+      name: issuers.cert-manager.io
+      status: Synced
+      version: v1
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+      name: orders.acme.cert-manager.io
+      status: Synced
+      version: v1
+    - group: apps
+      kind: Deployment
+      name: cert-manager
+      namespace: cert-manager
+      status: Synced
+      version: v1
+    - group: apps
+      kind: Deployment
+      name: cert-manager-cainjector
+      namespace: cert-manager
+      status: Synced
+      version: v1
+    - group: apps
+      kind: Deployment
+      name: cert-manager-webhook
+      namespace: cert-manager
+      status: Synced
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: cert-manager-cainjector
+      status: Synced
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: cert-manager-cluster-view
+      status: Synced
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: cert-manager-controller-approve:cert-manager-io
+      status: Synced
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: cert-manager-controller-certificates
+      status: Synced
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: cert-manager-controller-certificatesigningrequests
+      status: Synced
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: cert-manager-controller-challenges
+      status: Synced
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: cert-manager-controller-clusterissuers
+      status: Synced
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: cert-manager-controller-ingress-shim
+      status: Synced
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: cert-manager-controller-issuers
+      status: Synced
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: cert-manager-controller-orders
+      status: Synced
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: cert-manager-edit
+      status: Synced
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: cert-manager-view
+      status: Synced
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: cert-manager-webhook:subjectaccessreviews
+      status: Synced
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRoleBinding
+      name: cert-manager-cainjector
+      status: Synced
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRoleBinding
+      name: cert-manager-controller-approve:cert-manager-io
+      status: Synced
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRoleBinding
+      name: cert-manager-controller-certificates
+      status: Synced
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRoleBinding
+      name: cert-manager-controller-certificatesigningrequests
+      status: Synced
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRoleBinding
+      name: cert-manager-controller-challenges
+      status: Synced
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRoleBinding
+      name: cert-manager-controller-clusterissuers
+      status: Synced
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRoleBinding
+      name: cert-manager-controller-ingress-shim
+      status: Synced
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRoleBinding
+      name: cert-manager-controller-issuers
+      status: Synced
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRoleBinding
+      name: cert-manager-controller-orders
+      status: Synced
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRoleBinding
+      name: cert-manager-webhook:subjectaccessreviews
+      status: Synced
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: Role
+      name: cert-manager-webhook:dynamic-serving
+      namespace: cert-manager
+      status: Synced
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: Role
+      name: cert-manager-cainjector:leaderelection
+      namespace: kube-system
+      status: Synced
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: Role
+      name: cert-manager:leaderelection
+      namespace: kube-system
+      status: Synced
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: RoleBinding
+      name: cert-manager-webhook:dynamic-serving
+      namespace: cert-manager
+      status: Synced
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: RoleBinding
+      name: cert-manager-cainjector:leaderelection
+      namespace: kube-system
+      status: Synced
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: RoleBinding
+      name: cert-manager:leaderelection
+      namespace: kube-system
+      status: Synced
+      version: v1
+    sourceHydrator: {}
+    sourceType: Helm
+    summary:
+      externalURLs:
+      - https://cert-manager.io/docs/
+      images:
+      - quay.io/jetstack/cert-manager-cainjector:v1.13.0
+      - quay.io/jetstack/cert-manager-controller:v1.13.0
+      - quay.io/jetstack/cert-manager-webhook:v1.13.0
+    sync:
+      comparedTo:
+        destination:
+          namespace: cert-manager
+          server: https://kubernetes.default.svc
+        source:
+          chart: cert-manager
+          helm:
+            values: |
+              installCRDs: true
+          repoURL: https://charts.jetstack.io
+          targetRevision: v1.13.0
+      revision: v1.13.0
+      status: Synced
+- apiVersion: argoproj.io/v1alpha1
+  kind: Application
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"argoproj.io/v1alpha1","kind":"Application","metadata":{"annotations":{},"name":"core-pipeline-dev","namespace":"argocd"},"spec":{"destination":{"namespace":"dev-core","server":"https://kubernetes.default.svc"},"project":"default","source":{"helm":{"values":"image:\n  repository: nginx\n  tag: latest\nservice:\n  port: 8080\nenv: dev\n"},"path":"charts/core-pipeline","repoURL":"https://github.com/uz0/core-charts","targetRevision":"HEAD"},"syncPolicy":{"automated":{"prune":true,"selfHeal":true},"syncOptions":["CreateNamespace=true"]}}}
+      link.argocd.argoproj.io/external-link: https://core-pipeline.dev.theedgestory.org
+    creationTimestamp: "2025-09-28T23:32:13Z"
+    generation: 11
+    name: core-pipeline-dev
+    namespace: argocd
+    resourceVersion: "19700"
+    uid: 79dbd3a2-852e-4ebf-b741-a796934453a8
+  spec:
+    destination:
+      namespace: dev-core
+      server: https://kubernetes.default.svc
+    project: applications
+    source:
+      helm:
+        values: |
+          image:
+            repository: nginx
+            tag: latest
+          service:
+            port: 8080
+          env: dev
+      path: charts/core-pipeline
+      repoURL: https://github.com/uz0/core-charts
+      targetRevision: add-dev-ui
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      syncOptions:
+      - CreateNamespace=true
+  status:
+    conditions:
+    - lastTransitionTime: "2025-09-28T23:32:13Z"
+      message: 'Failed to load target state: failed to generate manifest for source
+        1 of 1: rpc error: code = Unknown desc = failed to list refs: authentication
+        required: Repository not found.'
+      type: ComparisonError
+    controllerNamespace: argocd
+    health:
+      lastTransitionTime: "2025-09-28T23:32:13Z"
+      status: Healthy
+    reconciledAt: "2025-09-28T23:53:45Z"
+    resourceHealthSource: appTree
+    summary:
+      externalURLs:
+      - https://core-pipeline.dev.theedgestory.org
+    sync:
+      comparedTo:
+        destination:
+          namespace: dev-core
+          server: https://kubernetes.default.svc
+        source:
+          helm:
+            values: |
+              image:
+                repository: nginx
+                tag: latest
+              service:
+                port: 8080
+              env: dev
+          path: charts/core-pipeline
+          repoURL: https://github.com/uz0/core-charts
+          targetRevision: add-dev-ui
+      status: Unknown
+- apiVersion: argoproj.io/v1alpha1
+  kind: Application
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"argoproj.io/v1alpha1","kind":"Application","metadata":{"annotations":{},"name":"core-pipeline-prod","namespace":"argocd"},"spec":{"destination":{"namespace":"prod-core","server":"https://kubernetes.default.svc"},"project":"default","source":{"helm":{"values":"image:\n  repository: nginx\n  tag: latest\nservice:\n  port: 8080\nenv: prod\nreplicaCount: 2\n"},"path":"charts/core-pipeline","repoURL":"https://github.com/uz0/core-charts","targetRevision":"HEAD"},"syncPolicy":{"automated":{"prune":false,"selfHeal":false},"syncOptions":["CreateNamespace=true"]}}}
+      link.argocd.argoproj.io/external-link: https://core-pipeline.theedgestory.org
+    creationTimestamp: "2025-09-28T23:32:13Z"
+    generation: 10
+    name: core-pipeline-prod
+    namespace: argocd
+    resourceVersion: "19701"
+    uid: bed5a043-3025-4535-b654-a0fbccb34242
+  spec:
+    destination:
+      namespace: prod-core
+      server: https://kubernetes.default.svc
+    project: applications
+    source:
+      helm:
+        values: |
+          image:
+            repository: nginx
+            tag: latest
+          service:
+            port: 8080
+          env: prod
+          replicaCount: 2
+      path: charts/core-pipeline
+      repoURL: https://github.com/uz0/core-charts
+      targetRevision: add-dev-ui
+    syncPolicy:
+      automated:
+        prune: false
+        selfHeal: false
+      syncOptions:
+      - CreateNamespace=true
+  status:
+    conditions:
+    - lastTransitionTime: "2025-09-28T23:32:13Z"
+      message: 'Failed to load target state: failed to generate manifest for source
+        1 of 1: rpc error: code = Unknown desc = failed to list refs: authentication
+        required: Repository not found.'
+      type: ComparisonError
+    controllerNamespace: argocd
+    health:
+      lastTransitionTime: "2025-09-28T23:32:13Z"
+      status: Healthy
+    reconciledAt: "2025-09-28T23:53:46Z"
+    resourceHealthSource: appTree
+    summary:
+      externalURLs:
+      - https://core-pipeline.theedgestory.org
+    sync:
+      comparedTo:
+        destination:
+          namespace: prod-core
+          server: https://kubernetes.default.svc
+        source:
+          helm:
+            values: |
+              image:
+                repository: nginx
+                tag: latest
+              service:
+                port: 8080
+              env: prod
+              replicaCount: 2
+          path: charts/core-pipeline
+          repoURL: https://github.com/uz0/core-charts
+          targetRevision: add-dev-ui
+      status: Unknown
+- apiVersion: argoproj.io/v1alpha1
+  kind: Application
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"argoproj.io/v1alpha1","kind":"Application","metadata":{"annotations":{"link.argocd.argoproj.io/external-link":"https://grafana.dev.theedgestory.org"},"name":"grafana","namespace":"argocd"},"spec":{"destination":{"namespace":"monitoring","server":"https://kubernetes.default.svc"},"project":"monitoring","source":{"chart":"grafana","repoURL":"https://grafana.github.io/helm-charts","targetRevision":"7.0.0"},"syncPolicy":{"automated":{"prune":true,"selfHeal":true}}}}
+      link.argocd.argoproj.io/external-link: https://grafana.dev.theedgestory.org
+    creationTimestamp: "2025-09-28T23:39:09Z"
+    generation: 18
+    name: grafana
+    namespace: argocd
+    resourceVersion: "19614"
+    uid: f4fa4864-565b-47e6-9a8e-48ecf257aa37
+  spec:
+    destination:
+      namespace: monitoring
+      server: https://kubernetes.default.svc
+    project: monitoring
+    source:
+      chart: grafana
+      repoURL: https://grafana.github.io/helm-charts
+      targetRevision: 7.0.0
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+  status:
+    controllerNamespace: argocd
+    health:
+      lastTransitionTime: "2025-09-28T23:39:33Z"
+      status: Healthy
+    history:
+    - deployStartedAt: "2025-09-28T23:39:11Z"
+      deployedAt: "2025-09-28T23:39:13Z"
+      id: 0
+      initiatedBy:
+        automated: true
+      revision: 7.0.0
+      source:
+        chart: grafana
+        repoURL: https://grafana.github.io/helm-charts
+        targetRevision: 7.0.0
+    operationState:
+      finishedAt: "2025-09-28T23:39:13Z"
+      message: successfully synced (all tasks run)
+      operation:
+        initiatedBy:
+          automated: true
+        retry:
+          limit: 5
+        sync:
+          prune: true
+          revision: 7.0.0
+      phase: Succeeded
+      startedAt: "2025-09-28T23:39:11Z"
+      syncResult:
+        resources:
+        - group: ""
+          hookPhase: Running
+          kind: ServiceAccount
+          message: serviceaccount/grafana created
+          name: grafana
+          namespace: monitoring
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: ""
+          hookPhase: Running
+          kind: Secret
+          message: secret/grafana created
+          name: grafana
+          namespace: monitoring
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: ""
+          hookPhase: Running
+          kind: ConfigMap
+          message: configmap/grafana created
+          name: grafana
+          namespace: monitoring
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: rbac.authorization.k8s.io
+          hookPhase: Running
+          kind: ClusterRole
+          message: 'clusterrole.rbac.authorization.k8s.io/grafana-clusterrole reconciled.
+            reconciliation required create. clusterrole.rbac.authorization.k8s.io/grafana-clusterrole
+            configured. Warning: resource clusterroles/grafana-clusterrole is missing
+            the kubectl.kubernetes.io/last-applied-configuration annotation which
+            is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: grafana-clusterrole
+          namespace: monitoring
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: rbac.authorization.k8s.io
+          hookPhase: Running
+          kind: ClusterRoleBinding
+          message: "clusterrolebinding.rbac.authorization.k8s.io/grafana-clusterrolebinding
+            reconciled. reconciliation required create\n\tmissing subjects added:\n\t\t{Kind:ServiceAccount
+            APIGroup: Name:grafana Namespace:monitoring}. clusterrolebinding.rbac.authorization.k8s.io/grafana-clusterrolebinding
+            configured. Warning: resource clusterrolebindings/grafana-clusterrolebinding
+            is missing the kubectl.kubernetes.io/last-applied-configuration annotation
+            which is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically."
+          name: grafana-clusterrolebinding
+          namespace: monitoring
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: rbac.authorization.k8s.io
+          hookPhase: Running
+          kind: Role
+          message: 'role.rbac.authorization.k8s.io/grafana reconciled. reconciliation
+            required create. role.rbac.authorization.k8s.io/grafana configured. Warning:
+            resource roles/grafana is missing the kubectl.kubernetes.io/last-applied-configuration
+            annotation which is required by  apply.  apply should only be used on
+            resources created declaratively by either  create --save-config or  apply.
+            The missing annotation will be patched automatically.'
+          name: grafana
+          namespace: monitoring
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: rbac.authorization.k8s.io
+          hookPhase: Running
+          kind: RoleBinding
+          message: "rolebinding.rbac.authorization.k8s.io/grafana reconciled. reconciliation
+            required create\n\tmissing subjects added:\n\t\t{Kind:ServiceAccount APIGroup:
+            Name:grafana Namespace:monitoring}. rolebinding.rbac.authorization.k8s.io/grafana
+            configured. Warning: resource rolebindings/grafana is missing the kubectl.kubernetes.io/last-applied-configuration
+            annotation which is required by  apply.  apply should only be used on
+            resources created declaratively by either  create --save-config or  apply.
+            The missing annotation will be patched automatically."
+          name: grafana
+          namespace: monitoring
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: ""
+          hookPhase: Running
+          kind: Service
+          message: service/grafana created
+          name: grafana
+          namespace: monitoring
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: apps
+          hookPhase: Running
+          images:
+          - docker.io/grafana/grafana:10.1.5
+          kind: Deployment
+          message: deployment.apps/grafana created
+          name: grafana
+          namespace: monitoring
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        revision: 7.0.0
+        source:
+          chart: grafana
+          repoURL: https://grafana.github.io/helm-charts
+          targetRevision: 7.0.0
+    reconciledAt: "2025-09-28T23:51:12Z"
+    resourceHealthSource: appTree
+    resources:
+    - kind: ConfigMap
+      name: grafana
+      namespace: monitoring
+      status: Synced
+      version: v1
+    - kind: Secret
+      name: grafana
+      namespace: monitoring
+      status: Synced
+      version: v1
+    - kind: Service
+      name: grafana
+      namespace: monitoring
+      status: Synced
+      version: v1
+    - kind: ServiceAccount
+      name: grafana
+      namespace: monitoring
+      status: Synced
+      version: v1
+    - group: apps
+      kind: Deployment
+      name: grafana
+      namespace: monitoring
+      status: Synced
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: grafana-clusterrole
+      status: Synced
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRoleBinding
+      name: grafana-clusterrolebinding
+      status: Synced
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: Role
+      name: grafana
+      namespace: monitoring
+      status: Synced
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: RoleBinding
+      name: grafana
+      namespace: monitoring
+      status: Synced
+      version: v1
+    sourceHydrator: {}
+    sourceType: Helm
+    summary:
+      externalURLs:
+      - https://grafana.dev.theedgestory.org
+      images:
+      - docker.io/grafana/grafana:10.1.5
+    sync:
+      comparedTo:
+        destination:
+          namespace: monitoring
+          server: https://kubernetes.default.svc
+        source:
+          chart: grafana
+          repoURL: https://grafana.github.io/helm-charts
+          targetRevision: 7.0.0
+      revision: 7.0.0
+      status: Synced
+- apiVersion: argoproj.io/v1alpha1
+  kind: Application
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"argoproj.io/v1alpha1","kind":"Application","metadata":{"annotations":{},"name":"kafka-ui","namespace":"argocd"},"spec":{"destination":{"namespace":"kafka","server":"https://kubernetes.default.svc"},"project":"default","source":{"chart":"kafka-ui","helm":{"values":"envs:\n  config:\n    KAFKA_CLUSTERS_0_NAME: kafka-cluster\n    KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-controller-headless:9092\nservice:\n  type: NodePort\n"},"repoURL":"https://provectus.github.io/kafka-ui-charts","targetRevision":"0.7.5"},"syncPolicy":{"automated":{"prune":true,"selfHeal":true}}}}
+      link.argocd.argoproj.io/external-link: https://kafka.dev.theedgestory.org
+    creationTimestamp: "2025-09-28T23:31:52Z"
+    generation: 18
+    name: kafka-ui
+    namespace: argocd
+    resourceVersion: "19719"
+    uid: 62c33b34-7711-4aff-8e7c-cb4686856c39
+  spec:
+    destination:
+      namespace: kafka
+      server: https://kubernetes.default.svc
+    project: data
+    source:
+      chart: kafka-ui
+      helm:
+        values: |
+          envs:
+            config:
+              KAFKA_CLUSTERS_0_NAME: kafka-cluster
+              KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-controller-headless:9092
+          service:
+            type: NodePort
+      repoURL: https://provectus.github.io/kafka-ui-charts
+      targetRevision: 0.7.5
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+  status:
+    controllerNamespace: argocd
+    health:
+      lastTransitionTime: "2025-09-28T23:33:04Z"
+      status: Healthy
+    history:
+    - deployStartedAt: "2025-09-28T23:31:53Z"
+      deployedAt: "2025-09-28T23:31:53Z"
+      id: 0
+      initiatedBy:
+        automated: true
+      revision: 0.7.5
+      source:
+        chart: kafka-ui
+        helm:
+          values: |
+            envs:
+              config:
+                KAFKA_CLUSTERS_0_NAME: kafka-cluster
+                KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-controller-headless:9092
+            service:
+              type: NodePort
+        repoURL: https://provectus.github.io/kafka-ui-charts
+        targetRevision: 0.7.5
+    operationState:
+      finishedAt: "2025-09-28T23:31:53Z"
+      message: successfully synced (all tasks run)
+      operation:
+        initiatedBy:
+          automated: true
+        retry:
+          limit: 5
+        sync:
+          prune: true
+          revision: 0.7.5
+      phase: Succeeded
+      startedAt: "2025-09-28T23:31:53Z"
+      syncResult:
+        resources:
+        - group: ""
+          hookPhase: Running
+          kind: ServiceAccount
+          message: 'serviceaccount/kafka-ui configured. Warning: resource serviceaccounts/kafka-ui
+            is missing the kubectl.kubernetes.io/last-applied-configuration annotation
+            which is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: kafka-ui
+          namespace: kafka
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: ""
+          hookPhase: Running
+          kind: ConfigMap
+          message: configmap/kafka-ui created
+          name: kafka-ui
+          namespace: kafka
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: ""
+          hookPhase: Running
+          kind: Service
+          message: 'service/kafka-ui configured. Warning: resource services/kafka-ui
+            is missing the kubectl.kubernetes.io/last-applied-configuration annotation
+            which is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: kafka-ui
+          namespace: kafka
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: apps
+          hookPhase: Running
+          images:
+          - docker.io/provectuslabs/kafka-ui:v0.7.1
+          kind: Deployment
+          message: 'deployment.apps/kafka-ui configured. Warning: resource deployments/kafka-ui
+            is missing the kubectl.kubernetes.io/last-applied-configuration annotation
+            which is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: kafka-ui
+          namespace: kafka
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        revision: 0.7.5
+        source:
+          chart: kafka-ui
+          helm:
+            values: |
+              envs:
+                config:
+                  KAFKA_CLUSTERS_0_NAME: kafka-cluster
+                  KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-controller-headless:9092
+              service:
+                type: NodePort
+          repoURL: https://provectus.github.io/kafka-ui-charts
+          targetRevision: 0.7.5
+    reconciledAt: "2025-09-28T23:54:18Z"
+    resourceHealthSource: appTree
+    resources:
+    - kind: ConfigMap
+      name: kafka-ui
+      namespace: kafka
+      status: Synced
+      version: v1
+    - kind: Service
+      name: kafka-ui
+      namespace: kafka
+      status: Synced
+      version: v1
+    - kind: ServiceAccount
+      name: kafka-ui
+      namespace: kafka
+      status: Synced
+      version: v1
+    - group: apps
+      kind: Deployment
+      name: kafka-ui
+      namespace: kafka
+      status: Synced
+      version: v1
+    sourceHydrator: {}
+    sourceType: Helm
+    summary:
+      externalURLs:
+      - https://kafka.dev.theedgestory.org
+      images:
+      - docker.io/provectuslabs/kafka-ui:v0.7.1
+    sync:
+      comparedTo:
+        destination:
+          namespace: kafka
+          server: https://kubernetes.default.svc
+        source:
+          chart: kafka-ui
+          helm:
+            values: |
+              envs:
+                config:
+                  KAFKA_CLUSTERS_0_NAME: kafka-cluster
+                  KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-controller-headless:9092
+              service:
+                type: NodePort
+          repoURL: https://provectus.github.io/kafka-ui-charts
+          targetRevision: 0.7.5
+      revision: 0.7.5
+      status: Synced
+- apiVersion: argoproj.io/v1alpha1
+  kind: Application
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"argoproj.io/v1alpha1","kind":"Application","metadata":{"annotations":{"link.argocd.argoproj.io/external-link":"https://grafana.dev.theedgestory.org/explore"},"name":"loki-stack","namespace":"argocd"},"spec":{"destination":{"namespace":"monitoring","server":"https://kubernetes.default.svc"},"project":"monitoring","source":{"chart":"loki-stack","helm":{"values":"loki:\n  auth_enabled: false\npromtail:\n  enabled: true\ngrafana:\n  enabled: false\n"},"repoURL":"https://grafana.github.io/helm-charts","targetRevision":"2.10.0"},"syncPolicy":{"syncOptions":["CreateNamespace=true"]}}}
+      link.argocd.argoproj.io/external-link: https://grafana.dev.theedgestory.org/explore
+    creationTimestamp: "2025-09-28T23:50:27Z"
+    generation: 4
+    name: loki-stack
+    namespace: argocd
+    resourceVersion: "19721"
+    uid: 302143a7-5482-4a4e-acec-b114e2938106
+  spec:
+    destination:
+      namespace: monitoring
+      server: https://kubernetes.default.svc
+    project: monitoring
+    source:
+      chart: loki-stack
+      helm:
+        values: |
+          loki:
+            auth_enabled: false
+          promtail:
+            enabled: true
+          grafana:
+            enabled: false
+      repoURL: https://grafana.github.io/helm-charts
+      targetRevision: 2.10.0
+    syncPolicy:
+      syncOptions:
+      - CreateNamespace=true
+  status:
+    controllerNamespace: argocd
+    health:
+      lastTransitionTime: "2025-09-28T23:50:28Z"
+      status: Healthy
+    reconciledAt: "2025-09-28T23:54:21Z"
+    resourceHealthSource: appTree
+    resources:
+    - kind: ConfigMap
+      name: loki-stack
+      namespace: monitoring
+      status: OutOfSync
+      version: v1
+    - kind: ConfigMap
+      name: loki-stack-test
+      namespace: monitoring
+      status: OutOfSync
+      version: v1
+    - kind: Secret
+      name: loki-stack
+      namespace: monitoring
+      status: OutOfSync
+      version: v1
+    - kind: Secret
+      name: loki-stack-promtail
+      namespace: monitoring
+      status: OutOfSync
+      version: v1
+    - kind: Service
+      name: loki-stack
+      namespace: monitoring
+      status: OutOfSync
+      version: v1
+    - kind: Service
+      name: loki-stack-headless
+      namespace: monitoring
+      status: OutOfSync
+      version: v1
+    - kind: Service
+      name: loki-stack-memberlist
+      namespace: monitoring
+      status: OutOfSync
+      version: v1
+    - kind: ServiceAccount
+      name: loki-stack
+      namespace: monitoring
+      status: OutOfSync
+      version: v1
+    - kind: ServiceAccount
+      name: loki-stack-promtail
+      namespace: monitoring
+      status: OutOfSync
+      version: v1
+    - group: apps
+      kind: DaemonSet
+      name: loki-stack-promtail
+      namespace: monitoring
+      status: OutOfSync
+      version: v1
+    - group: apps
+      kind: StatefulSet
+      name: loki-stack
+      namespace: monitoring
+      status: OutOfSync
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: loki-stack-promtail
+      status: OutOfSync
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRoleBinding
+      name: loki-stack-promtail
+      status: OutOfSync
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: Role
+      name: loki-stack
+      namespace: monitoring
+      status: OutOfSync
+      version: v1
+    - group: rbac.authorization.k8s.io
+      kind: RoleBinding
+      name: loki-stack
+      namespace: monitoring
+      status: OutOfSync
+      version: v1
+    sourceType: Helm
+    summary:
+      externalURLs:
+      - https://grafana.dev.theedgestory.org/explore
+      images:
+      - docker.io/grafana/promtail:2.9.3
+      - grafana/loki:2.6.1
+    sync:
+      comparedTo:
+        destination:
+          namespace: monitoring
+          server: https://kubernetes.default.svc
+        source:
+          chart: loki-stack
+          helm:
+            values: |
+              loki:
+                auth_enabled: false
+              promtail:
+                enabled: true
+              grafana:
+                enabled: false
+          repoURL: https://grafana.github.io/helm-charts
+          targetRevision: 2.10.0
+      revision: 2.10.0
+      status: OutOfSync
+- apiVersion: argoproj.io/v1alpha1
+  kind: Application
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"argoproj.io/v1alpha1","kind":"Application","metadata":{"annotations":{},"name":"tempo","namespace":"argocd"},"spec":{"destination":{"namespace":"monitoring","server":"https://kubernetes.default.svc"},"project":"default","source":{"chart":"tempo","helm":{"values":"tempo:\n  metricsGenerator:\n    enabled: false\n  searchEnabled: true\n"},"repoURL":"https://grafana.github.io/helm-charts","targetRevision":"1.5.0"},"syncPolicy":{"automated":{"prune":true,"selfHeal":true}}}}
+      link.argocd.argoproj.io/external-link: https://grafana.dev.theedgestory.org/explore
+    creationTimestamp: "2025-09-28T23:31:41Z"
+    generation: 18
+    name: tempo
+    namespace: argocd
+    resourceVersion: "19718"
+    uid: a8a7039a-dc55-4174-b2f0-2c8a10253331
+  spec:
+    destination:
+      namespace: monitoring
+      server: https://kubernetes.default.svc
+    project: monitoring
+    source:
+      chart: tempo
+      helm:
+        values: |
+          tempo:
+            metricsGenerator:
+              enabled: false
+            searchEnabled: true
+      repoURL: https://grafana.github.io/helm-charts
+      targetRevision: 1.5.0
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+  status:
+    controllerNamespace: argocd
+    health:
+      lastTransitionTime: "2025-09-28T23:31:51Z"
+      status: Healthy
+    history:
+    - deployStartedAt: "2025-09-28T23:31:43Z"
+      deployedAt: "2025-09-28T23:31:44Z"
+      id: 0
+      initiatedBy:
+        automated: true
+      revision: 1.5.0
+      source:
+        chart: tempo
+        helm:
+          values: |
+            tempo:
+              metricsGenerator:
+                enabled: false
+              searchEnabled: true
+        repoURL: https://grafana.github.io/helm-charts
+        targetRevision: 1.5.0
+    operationState:
+      finishedAt: "2025-09-28T23:31:44Z"
+      message: successfully synced (all tasks run)
+      operation:
+        initiatedBy:
+          automated: true
+        retry:
+          limit: 5
+        sync:
+          prune: true
+          revision: 1.5.0
+      phase: Succeeded
+      startedAt: "2025-09-28T23:31:43Z"
+      syncResult:
+        resources:
+        - group: ""
+          hookPhase: Running
+          kind: ServiceAccount
+          message: 'serviceaccount/tempo configured. Warning: resource serviceaccounts/tempo
+            is missing the kubectl.kubernetes.io/last-applied-configuration annotation
+            which is required by  apply.  apply should only be used on resources created
+            declaratively by either  create --save-config or  apply. The missing annotation
+            will be patched automatically.'
+          name: tempo
+          namespace: monitoring
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: ""
+          hookPhase: Running
+          kind: ConfigMap
+          message: configmap/tempo created
+          name: tempo
+          namespace: monitoring
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: ""
+          hookPhase: Running
+          kind: Service
+          message: service/tempo created
+          name: tempo
+          namespace: monitoring
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        - group: apps
+          hookPhase: Running
+          images:
+          - grafana/tempo:2.2.0
+          kind: StatefulSet
+          message: statefulset.apps/tempo created
+          name: tempo
+          namespace: monitoring
+          status: Synced
+          syncPhase: Sync
+          version: v1
+        revision: 1.5.0
+        source:
+          chart: tempo
+          helm:
+            values: |
+              tempo:
+                metricsGenerator:
+                  enabled: false
+                searchEnabled: true
+          repoURL: https://grafana.github.io/helm-charts
+          targetRevision: 1.5.0
+    reconciledAt: "2025-09-28T23:54:17Z"
+    resourceHealthSource: appTree
+    resources:
+    - kind: ConfigMap
+      name: tempo
+      namespace: monitoring
+      status: Synced
+      version: v1
+    - kind: Service
+      name: tempo
+      namespace: monitoring
+      status: Synced
+      version: v1
+    - kind: ServiceAccount
+      name: tempo
+      namespace: monitoring
+      status: Synced
+      version: v1
+    - group: apps
+      kind: StatefulSet
+      name: tempo
+      namespace: monitoring
+      status: Synced
+      version: v1
+    sourceHydrator: {}
+    sourceType: Helm
+    summary:
+      externalURLs:
+      - https://grafana.dev.theedgestory.org/explore
+      images:
+      - grafana/tempo:2.2.0
+    sync:
+      comparedTo:
+        destination:
+          namespace: monitoring
+          server: https://kubernetes.default.svc
+        source:
+          chart: tempo
+          helm:
+            values: |
+              tempo:
+                metricsGenerator:
+                  enabled: false
+                searchEnabled: true
+          repoURL: https://grafana.github.io/helm-charts
+          targetRevision: 1.5.0
+      revision: 1.5.0
+      status: Synced
+kind: List
+metadata:
+  resourceVersion: ""

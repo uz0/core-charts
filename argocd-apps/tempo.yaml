@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"argoproj.io/v1alpha1","kind":"Application","metadata":{"annotations":{},"name":"tempo","namespace":"argocd"},"spec":{"destination":{"namespace":"monitoring","server":"https://kubernetes.default.svc"},"project":"default","source":{"chart":"tempo","helm":{"values":"tempo:\n  metricsGenerator:\n    enabled: false\n  searchEnabled: true\n"},"repoURL":"https://grafana.github.io/helm-charts","targetRevision":"1.5.0"},"syncPolicy":{"automated":{"prune":true,"selfHeal":true}}}}
+    link.argocd.argoproj.io/external-link: https://grafana.dev.theedgestory.org/explore
+  name: tempo
+  namespace: argocd
+spec:
+  destination:
+    namespace: monitoring
+    server: https://kubernetes.default.svc
+  project: monitoring
+  source:
+    chart: tempo
+    helm:
+      values: |
+        tempo:
+          metricsGenerator:
+            enabled: false
+          searchEnabled: true
+    repoURL: https://grafana.github.io/helm-charts
+    targetRevision: 1.5.0
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

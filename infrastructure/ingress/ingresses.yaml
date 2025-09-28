@@ -1,0 +1,409 @@
+apiVersion: v1
+items:
+- apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"networking.k8s.io/v1","kind":"Ingress","metadata":{"annotations":{"cert-manager.io/cluster-issuer":"letsencrypt-prod","traefik.ingress.kubernetes.io/router.entrypoints":"web,websecure"},"name":"argocd-server-ingress","namespace":"argocd"},"spec":{"ingressClassName":"traefik","rules":[{"host":"argo.dev.theedgestory.org","http":{"paths":[{"backend":{"service":{"name":"argocd-server","port":{"number":80}}},"path":"/","pathType":"Prefix"}]}}],"tls":[{"hosts":["argo.dev.theedgestory.org"],"secretName":"argocd-tls"}]}}
+      traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+    creationTimestamp: "2025-09-28T23:21:03Z"
+    generation: 1
+    name: argocd-server-ingress
+    namespace: argocd
+    resourceVersion: "13984"
+    uid: 9ae8a773-a6b2-4006-a9e7-ff2639c58830
+  spec:
+    ingressClassName: traefik
+    rules:
+    - host: argo.dev.theedgestory.org
+      http:
+        paths:
+        - backend:
+            service:
+              name: argocd-server
+              port:
+                number: 80
+          path: /
+          pathType: Prefix
+    tls:
+    - hosts:
+      - argo.dev.theedgestory.org
+      secretName: argocd-tls
+  status:
+    loadBalancer:
+      ingress:
+      - ip: 46.62.223.198
+- apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/whitelist-source-range: 0.0.0.0/0,::/0
+    creationTimestamp: "2025-09-28T23:21:05Z"
+    generateName: cm-acme-http-solver-
+    generation: 1
+    labels:
+      acme.cert-manager.io/http-domain: "2107050450"
+      acme.cert-manager.io/http-token: "791875099"
+      acme.cert-manager.io/http01-solver: "true"
+    name: cm-acme-http-solver-p2pt7
+    namespace: argocd
+    ownerReferences:
+    - apiVersion: acme.cert-manager.io/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Challenge
+      name: argocd-tls-1-2143326025-675425336
+      uid: 18bc0d38-d95e-4289-8107-8e3bc5bcaa51
+    resourceVersion: "14029"
+    uid: 8b9ef128-37f7-4f5a-8c1f-949a52ae8b4b
+  spec:
+    rules:
+    - host: argo.dev.theedgestory.org
+      http:
+        paths:
+        - backend:
+            service:
+              name: cm-acme-http-solver-pftcc
+              port:
+                number: 8089
+          path: /.well-known/acme-challenge/RMYSE48PZB0q-g3xW6lsvmKE1DgvmJXrJtvDnCip518
+          pathType: Exact
+  status:
+    loadBalancer: {}
+- apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/whitelist-source-range: 0.0.0.0/0,::/0
+    creationTimestamp: "2025-09-28T23:16:36Z"
+    generateName: cm-acme-http-solver-
+    generation: 1
+    labels:
+      acme.cert-manager.io/http-domain: "3876851029"
+      acme.cert-manager.io/http-token: "966594122"
+      acme.cert-manager.io/http01-solver: "true"
+    name: cm-acme-http-solver-cl6sc
+    namespace: dev-core
+    ownerReferences:
+    - apiVersion: acme.cert-manager.io/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Challenge
+      name: core-pipeline-tls-1-1358228814-4009958118
+      uid: d2196985-56ae-481d-85fb-d2469f58a611
+    resourceVersion: "13757"
+    uid: 5a05fb11-f7e0-4db5-8b18-0c8823314b37
+  spec:
+    rules:
+    - host: core-pipeline.dev.theedgestory.org
+      http:
+        paths:
+        - backend:
+            service:
+              name: cm-acme-http-solver-txt2f
+              port:
+                number: 8089
+          path: /.well-known/acme-challenge/dmjJgHM51c_ZBKXSf1C6WVMbPcdhgweF2vdq2yTPM8I
+          pathType: Exact
+  status:
+    loadBalancer: {}
+- apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"networking.k8s.io/v1","kind":"Ingress","metadata":{"annotations":{},"name":"core-pipeline-dev","namespace":"dev-core"},"spec":{"ingressClassName":"nginx","rules":[{"host":"core-pipeline.dev.theedgestory.org","http":{"paths":[{"backend":{"service":{"name":"core-pipeline","port":{"number":8080}}},"path":"/","pathType":"Prefix"}]}}]}}
+    creationTimestamp: "2025-09-28T23:15:29Z"
+    generation: 3
+    name: core-pipeline-dev
+    namespace: dev-core
+    resourceVersion: "13824"
+    uid: 9bfdf120-9d44-4590-ae38-a6cd722338f1
+  spec:
+    ingressClassName: traefik
+    rules:
+    - host: core-pipeline.dev.theedgestory.org
+      http:
+        paths:
+        - backend:
+            service:
+              name: core-pipeline
+              port:
+                number: 8080
+          path: /
+          pathType: Prefix
+    tls:
+    - hosts:
+      - core-pipeline.dev.theedgestory.org
+      secretName: core-pipeline-tls
+  status:
+    loadBalancer:
+      ingress:
+      - ip: 46.62.223.198
+- apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/whitelist-source-range: 0.0.0.0/0,::/0
+    creationTimestamp: "2025-09-28T23:16:27Z"
+    generateName: cm-acme-http-solver-
+    generation: 1
+    labels:
+      acme.cert-manager.io/http-domain: "2256407079"
+      acme.cert-manager.io/http-token: "692063769"
+      acme.cert-manager.io/http01-solver: "true"
+    name: cm-acme-http-solver-88hmt
+    namespace: kafka
+    ownerReferences:
+    - apiVersion: acme.cert-manager.io/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Challenge
+      name: kafka-ui-tls-1-1227913584-897852829
+      uid: 2b2963b2-4b8e-490d-a9c4-503775a359c7
+    resourceVersion: "13695"
+    uid: 3fda70bd-6647-4580-a636-5852820c78df
+  spec:
+    rules:
+    - host: kafka.dev.theedgestory.org
+      http:
+        paths:
+        - backend:
+            service:
+              name: cm-acme-http-solver-fr8pj
+              port:
+                number: 8089
+          path: /.well-known/acme-challenge/c-JUhG1jF4kbX-6_PDDtQM_F0zAaOZrM9Tmkz67yypM
+          pathType: Exact
+  status:
+    loadBalancer: {}
+- apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"networking.k8s.io/v1","kind":"Ingress","metadata":{"annotations":{},"name":"kafka-ui-ingress","namespace":"kafka"},"spec":{"ingressClassName":"nginx","rules":[{"host":"kafka.dev.theedgestory.org","http":{"paths":[{"backend":{"service":{"name":"kafka-ui","port":{"number":80}}},"path":"/","pathType":"Prefix"}]}}]}}
+    creationTimestamp: "2025-09-28T23:15:16Z"
+    generation: 3
+    name: kafka-ui-ingress
+    namespace: kafka
+    resourceVersion: "13821"
+    uid: b2d218a2-b6cf-4dc9-886a-bc9cded4d9d7
+  spec:
+    ingressClassName: traefik
+    rules:
+    - host: kafka.dev.theedgestory.org
+      http:
+        paths:
+        - backend:
+            service:
+              name: kafka-ui
+              port:
+                number: 80
+          path: /
+          pathType: Prefix
+    tls:
+    - hosts:
+      - kafka.dev.theedgestory.org
+      secretName: kafka-ui-tls
+  status:
+    loadBalancer:
+      ingress:
+      - ip: 46.62.223.198
+- apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/whitelist-source-range: 0.0.0.0/0,::/0
+    creationTimestamp: "2025-09-28T23:16:12Z"
+    generateName: cm-acme-http-solver-
+    generation: 1
+    labels:
+      acme.cert-manager.io/http-domain: "2635074297"
+      acme.cert-manager.io/http-token: "1065946869"
+      acme.cert-manager.io/http01-solver: "true"
+    name: cm-acme-http-solver-c6z8c
+    namespace: monitoring
+    ownerReferences:
+    - apiVersion: acme.cert-manager.io/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Challenge
+      name: grafana-tls-1-2589678374-1982183208
+      uid: 89d04526-ccc7-4904-9e2b-186dda65b78a
+    resourceVersion: "13571"
+    uid: 3595a794-1fe0-4d86-8c10-8ff06db10e41
+  spec:
+    rules:
+    - host: grafana.dev.theedgestory.org
+      http:
+        paths:
+        - backend:
+            service:
+              name: cm-acme-http-solver-r9zgk
+              port:
+                number: 8089
+          path: /.well-known/acme-challenge/6IbC8VdShpCXn9gsgOnENIZOKPlnzUr9QJYeyQMijIs
+          pathType: Exact
+  status:
+    loadBalancer: {}
+- apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/whitelist-source-range: 0.0.0.0/0,::/0
+    creationTimestamp: "2025-09-28T23:16:20Z"
+    generateName: cm-acme-http-solver-
+    generation: 1
+    labels:
+      acme.cert-manager.io/http-domain: "3364359285"
+      acme.cert-manager.io/http-token: "1332874872"
+      acme.cert-manager.io/http01-solver: "true"
+    name: cm-acme-http-solver-wkq8p
+    namespace: monitoring
+    ownerReferences:
+    - apiVersion: acme.cert-manager.io/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Challenge
+      name: prometheus-tls-1-1071220534-1659262835
+      uid: a61fd7b5-0e13-4ea4-8778-470f78834459
+    resourceVersion: "13635"
+    uid: 204ddd3d-fd21-4412-9de3-8c861b1aefc3
+  spec:
+    rules:
+    - host: prometheus.dev.theedgestory.org
+      http:
+        paths:
+        - backend:
+            service:
+              name: cm-acme-http-solver-9hg8h
+              port:
+                number: 8089
+          path: /.well-known/acme-challenge/hMwVzbdqjhYH1odbJ3N-FkOz0xxoUMQ8PNQbq5534cI
+          pathType: Exact
+  status:
+    loadBalancer: {}
+- apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"networking.k8s.io/v1","kind":"Ingress","metadata":{"annotations":{},"name":"grafana-ingress","namespace":"monitoring"},"spec":{"ingressClassName":"nginx","rules":[{"host":"grafana.dev.theedgestory.org","http":{"paths":[{"backend":{"service":{"name":"kube-prometheus-grafana","port":{"number":80}}},"path":"/","pathType":"Prefix"}]}}]}}
+    creationTimestamp: "2025-09-28T23:14:43Z"
+    generation: 3
+    name: grafana-ingress
+    namespace: monitoring
+    resourceVersion: "13817"
+    uid: a710370a-70a0-46ed-b8fa-98cac3c73562
+  spec:
+    ingressClassName: traefik
+    rules:
+    - host: grafana.dev.theedgestory.org
+      http:
+        paths:
+        - backend:
+            service:
+              name: kube-prometheus-grafana
+              port:
+                number: 80
+          path: /
+          pathType: Prefix
+    tls:
+    - hosts:
+      - grafana.dev.theedgestory.org
+      secretName: grafana-tls
+  status:
+    loadBalancer:
+      ingress:
+      - ip: 46.62.223.198
+- apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"networking.k8s.io/v1","kind":"Ingress","metadata":{"annotations":{},"name":"prometheus-ingress","namespace":"monitoring"},"spec":{"ingressClassName":"nginx","rules":[{"host":"prometheus.dev.theedgestory.org","http":{"paths":[{"backend":{"service":{"name":"kube-prometheus-kube-prome-prometheus","port":{"number":9090}}},"path":"/","pathType":"Prefix"}]}}]}}
+    creationTimestamp: "2025-09-28T23:15:03Z"
+    generation: 3
+    name: prometheus-ingress
+    namespace: monitoring
+    resourceVersion: "13819"
+    uid: c33ddf18-cd2d-4568-8a52-e3b35e1bee9c
+  spec:
+    ingressClassName: traefik
+    rules:
+    - host: prometheus.dev.theedgestory.org
+      http:
+        paths:
+        - backend:
+            service:
+              name: kube-prometheus-kube-prome-prometheus
+              port:
+                number: 9090
+          path: /
+          pathType: Prefix
+    tls:
+    - hosts:
+      - prometheus.dev.theedgestory.org
+      secretName: prometheus-tls
+  status:
+    loadBalancer:
+      ingress:
+      - ip: 46.62.223.198
+- apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      meta.helm.sh/release-name: core-pipeline-prod
+      meta.helm.sh/release-namespace: prod-core
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/rate-limit: "100"
+      nginx.ingress.kubernetes.io/ssl-protocols: TLSv1.2 TLSv1.3
+    creationTimestamp: "2025-09-28T22:31:14Z"
+    generation: 1
+    labels:
+      app.kubernetes.io/component: backend
+      app.kubernetes.io/instance: core-pipeline-prod
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: core-pipeline
+      app.kubernetes.io/part-of: core-pipeline
+      app.kubernetes.io/version: 1.0.0
+      helm.sh/chart: core-pipeline-1.0.0
+    name: core-pipeline-prod
+    namespace: prod-core
+    resourceVersion: "10539"
+    uid: 15e8f231-531d-4a42-9310-b17de0a620e2
+  spec:
+    ingressClassName: nginx
+    rules:
+    - host: core-pipeline.example.com
+      http:
+        paths:
+        - backend:
+            service:
+              name: core-pipeline-prod
+              port:
+                number: 80
+          path: /
+          pathType: Prefix
+    tls:
+    - hosts:
+      - core-pipeline.example.com
+      secretName: core-pipeline-tls
+  status:
+    loadBalancer: {}
+kind: List
+metadata:
+  resourceVersion: ""
