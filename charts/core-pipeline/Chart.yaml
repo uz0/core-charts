@@ -1,6 +1,18 @@
 apiVersion: v2
 name: core-pipeline
-description: Helm chart for core-pipeline
+description: Production-ready Helm chart for NestJS core-pipeline application
 type: application
-version: 0.1.0
+version: 1.0.0
 appVersion: "1.0.0"
+keywords:
+  - nestjs
+  - pipeline
+  - kafka
+  - postgresql
+  - redis
+home: https://github.com/uz0/core-pipeline
+sources:
+  - https://github.com/uz0/core-pipeline
+maintainers:
+  - name: uz0
+    email: admin@example.com

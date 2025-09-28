@@ -1,0 +1,41 @@
+# Staging environment overrides
+replicaCount: 2
+
+ingress:
+  enabled: true
+  hosts:
+    - host: core-pipeline-staging.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: core-pipeline-staging-tls
+      hosts:
+        - core-pipeline-staging.example.com
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+
+env:
+  NODE_ENV: staging
+  LOG_LEVEL: info
+
+persistence:
+  enabled: true
+  size: 5Gi
+
+networkPolicy:
+  enabled: false
+
+serviceMonitor:
+  enabled: true
