@@ -1,7 +1,151 @@
-replicaCount: 1
+# Default values for core-pipeline
+replicaCount: 2
+
 image:
   repository: ghcr.io/uz0/core-pipeline
-  tag: latest
+  pullPolicy: IfNotPresent
+  tag: ""  # Uses Chart.appVersion if empty
+
+imagePullSecrets:
+  - name: ghcr-secret
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/path: "/metrics"
+  prometheus.io/port: "3000"
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000
+
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+  allowPrivilegeEscalation: false
+
 service:
   type: ClusterIP
-  port: 3000
+  port: 80
+  targetPort: 3000
+
+ingress:
+  enabled: false
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/ssl-protocols: "TLSv1.2 TLSv1.3"
+  hosts:
+    - host: core-pipeline.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: http
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /ok
+    port: http
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 3
+
+startupProbe:
+  httpGet:
+    path: /health
+    port: http
+  initialDelaySeconds: 0
+  periodSeconds: 10
+  timeoutSeconds: 3
+  failureThreshold: 30
+  successThreshold: 1
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+env:
+  NODE_ENV: production
+  PORT: "3000"
+  LOG_LEVEL: info
+  METRICS_ENABLED: "true"
+  TRACING_ENABLED: "true"
+  OTEL_SERVICE_NAME: core-pipeline
+  OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo.monitoring:4318
+  # Kafka
+  KAFKA_BROKERS: kafka.kafka.svc.cluster.local:9092
+  KAFKA_CLIENT_ID: core-pipeline
+  KAFKA_GROUP_ID: core-pipeline-group
+  # PostgreSQL
+  POSTGRES_HOST: postgresql.database.svc.cluster.local
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB: core_pipeline
+  # Redis
+  REDIS_HOST: redis-master.redis.svc.cluster.local
+  REDIS_PORT: "6379"
+
+secrets:
+  POSTGRES_USER: core_user
+  POSTGRES_PASSWORD: core_password
+  REDIS_PASSWORD: redis_password
+
+configMap:
+  enabled: true
+  data: {}
+
+persistence:
+  enabled: false
+  storageClass: ""
+  accessMode: ReadWriteOnce
+  size: 8Gi
+  mountPath: /data
+
+networkPolicy:
+  enabled: false
+  policyTypes:
+    - Ingress
+    - Egress
+
+serviceMonitor:
+  enabled: false
+  interval: 30s
+  scrapeTimeout: 10s
+
+podDisruptionBudget:
+  enabled: false
+  minAvailable: 1

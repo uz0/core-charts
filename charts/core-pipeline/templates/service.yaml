@@ -1,11 +1,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: core-pipeline
+  name: {{ include "core-pipeline.fullname" . }}
+  labels:
+    {{- include "core-pipeline.labels" . | nindent 4 }}
 spec:
-  type: ClusterIP
+  type: {{ .Values.service.type }}
   ports:
-    - port: 3000
-      targetPort: 3000
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}
+      protocol: TCP
+      name: http
   selector:
-    app: core-pipeline
+    {{- include "core-pipeline.selectorLabels" . | nindent 4 }}

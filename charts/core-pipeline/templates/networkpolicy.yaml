@@ -1,0 +1,60 @@
+{{- if .Values.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "core-pipeline.fullname" . }}
+  labels:
+    {{- include "core-pipeline.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "core-pipeline.selectorLabels" . | nindent 6 }}
+  policyTypes:
+    {{- range .Values.networkPolicy.policyTypes }}
+    - {{ . }}
+    {{- end }}
+  ingress:
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            name: ingress-nginx
+      - namespaceSelector:
+          matchLabels:
+            name: monitoring
+      - podSelector:
+          matchLabels:
+            app.kubernetes.io/name: {{ include "core-pipeline.name" . }}
+      ports:
+        - protocol: TCP
+          port: 3000
+  egress:
+    - to:
+      - namespaceSelector:
+          matchLabels:
+            name: kafka
+      ports:
+        - protocol: TCP
+          port: 9092
+    - to:
+      - namespaceSelector:
+          matchLabels:
+            name: database
+      ports:
+        - protocol: TCP
+          port: 5432
+    - to:
+      - namespaceSelector:
+          matchLabels:
+            name: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    - to:
+      - namespaceSelector: {}
+        podSelector:
+          matchLabels:
+            k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+{{- end }}
