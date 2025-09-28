@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prod-postgres
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'git@github.com:uz0/core-charts.git'
+    targetRevision: main
+    path: charts/postgres
+    helm:
+      valueFiles:
+        - values-prod.yaml
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: prod-db
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
