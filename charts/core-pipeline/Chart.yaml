@@ -1,6 +1,6 @@
 apiVersion: v2
 name: core-pipeline
-description: Helm chart for core-pipeline NestJS app
+description: Helm chart for core-pipeline NestJS application
 type: application
 version: 0.1.0
 appVersion: "1.0.0"
