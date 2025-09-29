@@ -1,0 +1,59 @@
+{
+  "name": "core-charts",
+  "version": "1.0.0",
+  "description": "Helm charts for core-pipeline application deployment",
+  "type": "helm-charts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/core-charts.git",
+    "branch": "main"
+  },
+  "charts": [
+    {
+      "name": "core-pipeline",
+      "path": "./charts/core-pipeline",
+      "version": "0.1.0"
+    }
+  ],
+  "environments": [
+    {
+      "name": "development",
+      "valuesFile": "dev-core-pipeline.yaml",
+      "namespace": "core-dev"
+    },
+    {
+      "name": "production",
+      "valuesFile": "prod-core-pipeline.yaml",
+      "namespace": "core-prod"
+    }
+  ],
+  "argocd": {
+    "enabled": true,
+    "appsPath": "./argocd-apps",
+    "server": "argocd.example.com",
+    "project": "core-project"
+  },
+  "infrastructure": {
+    "path": "./infrastructure",
+    "provider": "kubernetes"
+  },
+  "ci": {
+    "enabled": true,
+    "provider": "github-actions",
+    "linting": true,
+    "testing": true,
+    "helmValidation": true
+  },
+  "dependencies": {
+    "helm": ">=3.0.0",
+    "kubectl": ">=1.20.0",
+    "argocd": ">=2.0.0"
+  },
+  "scripts": {
+    "lint": "helm lint ./charts/*",
+    "test": "helm unittest ./charts/*",
+    "validate": "helm template ./charts/core-pipeline",
+    "deploy:dev": "helm upgrade --install core-pipeline ./charts/core-pipeline -f dev-core-pipeline.yaml -n core-dev",
+    "deploy:prod": "helm upgrade --install core-pipeline ./charts/core-pipeline -f prod-core-pipeline.yaml -n core-prod"
+  }
+}
