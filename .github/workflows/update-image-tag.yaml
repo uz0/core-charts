@@ -32,7 +32,7 @@ jobs:
         
     - name: Update tag file
       run: |
-        cat > ${{ github.event.inputs.environment }}.tag.yaml <<EOF
+        cat > charts/core-pipeline/${{ github.event.inputs.environment }}.tag.yaml <<EOF
         image:
           tag: "${{ github.event.inputs.image_tag }}"
           repository: "${{ github.event.inputs.repository }}"
@@ -42,6 +42,6 @@ jobs:
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git add ${{ github.event.inputs.environment }}.tag.yaml
+        git add charts/core-pipeline/${{ github.event.inputs.environment }}.tag.yaml
         git commit -m "chore: Update ${{ github.event.inputs.environment }} image tag to ${{ github.event.inputs.image_tag }}"
         git push

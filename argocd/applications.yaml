@@ -20,7 +20,7 @@ spec:
       valueFiles:
       - values.yaml
       - values-dev.yaml
-      - ../../dev.tag.yaml
+      - dev.tag.yaml
   
   destination:
     server: https://kubernetes.default.svc
@@ -65,7 +65,7 @@ spec:
       valueFiles:
       - values.yaml
       - values-prod.yaml
-      - ../../prod.tag.yaml
+      - prod.tag.yaml
   
   destination:
     server: https://kubernetes.default.svc

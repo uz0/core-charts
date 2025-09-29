@@ -65,6 +65,8 @@ core-charts/
 │       ├── values.yaml          # Default values
 │       ├── values-dev.yaml      # Development overrides
 │       ├── values-prod.yaml     # Production overrides
+│       ├── dev.tag.yaml         # Development image tag (auto-updated by CI/CD)
+│       ├── prod.tag.yaml        # Production image tag (auto-updated by CI/CD)
 │       └── templates/           # Kubernetes manifests templates
 │           ├── deployment.yaml
 │           ├── service.yaml
@@ -76,8 +78,8 @@ core-charts/
 │           └── _helpers.tpl     # Template helpers
 ├── argocd/
 │   └── applications.yaml        # ArgoCD Application definitions
-├── dev.tag.yaml                 # Development image tag (auto-updated)
-├── prod.tag.yaml               # Production image tag (auto-updated)
+├── argocd/
+│   └── applications.yaml        # ArgoCD Application definitions
 └── .github/
     └── workflows/
         ├── update-image-tag.yaml   # Reusable workflow for CI/CD
@@ -90,7 +92,7 @@ core-charts/
 
 1. **Application Repository** builds and pushes Docker image
 2. **Application CI/CD** calls this repository's workflow to update image tag
-3. **Tag files** (`dev.tag.yaml` or `prod.tag.yaml`) are updated
+3. **Tag files** (`charts/<app-name>/dev.tag.yaml` or `charts/<app-name>/prod.tag.yaml`) are updated
 4. **ArgoCD** detects changes and syncs to Kubernetes
 5. **Kubernetes** rolls out new deployment
 
@@ -221,13 +223,15 @@ Copy templates from `charts/core-pipeline/templates/` and modify as needed.
 
 ### Step 6: Create Tag Files
 
-**dev-my-app.tag.yaml:**
+Create these files in your chart directory:
+
+**charts/my-new-app/dev.tag.yaml:**
 ```yaml
 image:
   tag: "develop"
 ```
 
-**prod-my-app.tag.yaml:**
+**charts/my-new-app/prod.tag.yaml:**
 ```yaml
 image:
   tag: "v1.0.0"
@@ -254,7 +258,7 @@ spec:
       valueFiles:
       - values.yaml
       - values-dev.yaml
-      - ../../dev-my-app.tag.yaml
+      - dev.tag.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: dev-core
@@ -280,7 +284,7 @@ spec:
       valueFiles:
       - values.yaml
       - values-prod.yaml
-      - ../../prod-my-app.tag.yaml
+      - prod.tag.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: prod-core
