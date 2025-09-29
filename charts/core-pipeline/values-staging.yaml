@@ -1,17 +1,25 @@
 # Staging environment overrides
 replicaCount: 2
 
+image:
+  repository: ghcr.io/uz0/core-pipeline
+  tag: "latest"
+  pullPolicy: Always
+
 ingress:
   enabled: true
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
   hosts:
-    - host: core-pipeline-staging.example.com
+    - host: core-pipeline.staging.theedgestory.org
       paths:
         - path: /
           pathType: Prefix
   tls:
     - secretName: core-pipeline-staging-tls
       hosts:
-        - core-pipeline-staging.example.com
+        - core-pipeline.staging.theedgestory.org
 
 resources:
   requests:
