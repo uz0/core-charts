@@ -2,8 +2,8 @@
 replicaCount: 1
 
 image:
-  repository: nginx
-  tag: "latest"
+  repository: swaggerapi/petstore3
+  tag: "unstable"
   pullPolicy: Always
 
 ingress:
@@ -38,7 +38,7 @@ env:
   NODE_ENV: development
   LOG_LEVEL: debug
   LOG_PRETTY: "true"
-  PORT: "3000"
+  PORT: "8080"
   METRICS_ENABLED: "true"
   METRICS_PREFIX: core_pipeline
   TRACING_ENABLED: "true"
