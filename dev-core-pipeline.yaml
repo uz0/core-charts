@@ -1,17 +1,40 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: dev-core-pipeline
+  name: core-pipeline-dev
   namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/uz0/core-charts.git'
+    repoURL: 'https://github.com/uz0/core-pipeline.git'
     targetRevision: main
-    path: charts/core-pipeline
+    path: deploy/helm/core-pipeline
     helm:
       valueFiles:
+        - values.yaml
         - values-dev.yaml
+      values: |
+        image:
+          repository: ghcr.io/uz0/core-pipeline
+          tag: latest
+          pullPolicy: Always
+        ingress:
+          enabled: true
+          className: nginx
+          hosts:
+            - host: core-pipeline.dev.example.com
+              paths:
+                - path: /
+                  pathType: Prefix
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: dev-core
@@ -19,3 +42,11 @@ spec:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m

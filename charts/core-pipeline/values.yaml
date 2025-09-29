@@ -2,12 +2,11 @@
 replicaCount: 2
 
 image:
-  repository: ghcr.io/uz0/core-pipeline
+  repository: nginx
   pullPolicy: IfNotPresent
-  tag: ""  # Uses Chart.appVersion if empty
+  tag: "latest"
 
-imagePullSecrets:
-  - name: ghcr-secret
+imagePullSecrets: []
 
 serviceAccount:
   create: true

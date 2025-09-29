@@ -2,7 +2,7 @@
 replicaCount: 3
 
 image:
-  repository: ghcr.io/uz0/core-pipeline
+  repository: nginx
   tag: "latest"
   pullPolicy: Always
 
