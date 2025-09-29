@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'git@github.com:uz0/core-pipeline.git'
+    repoURL: 'https://github.com/uz0/core-charts.git'
     targetRevision: main
     path: charts/core-pipeline
     helm:
