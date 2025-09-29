@@ -1,0 +1,197 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  yaml-lint:
+    name: YAML Linting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Validate YAML files
+        run: |
+          pip install yamllint
+          yamllint -c .yamllint . || true
+
+  helm-lint:
+    name: Helm Chart Linting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: 'latest'
+      
+      - name: Lint all Helm charts
+        run: |
+          for chart in charts/*/; do
+            if [ -f "$chart/Chart.yaml" ]; then
+              echo "Linting $chart..."
+              helm lint "$chart"
+              
+              # Test template rendering
+              helm template test "$chart" > /dev/null
+              
+              # Test with dev values
+              if [ -f "$chart/values-dev.yaml" ]; then
+                helm template dev "$chart" -f "$chart/values-dev.yaml" > /dev/null
+              fi
+              
+              # Test with prod values
+              if [ -f "$chart/values-prod.yaml" ]; then
+                helm template prod "$chart" -f "$chart/values-prod.yaml" > /dev/null
+              fi
+            fi
+          done
+
+  manifest-validation:
+    name: Kubernetes Manifest Validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Validate manifests with kubeval
+        run: |
+          wget -q https://github.com/instrumenta/kubeval/releases/latest/download/kubeval-linux-amd64.tar.gz
+          tar xf kubeval-linux-amd64.tar.gz
+          sudo mv kubeval /usr/local/bin
+          
+          for file in manifests/*.yaml; do
+            echo "Validating $file..."
+            kubeval --ignore-missing-schemas "$file"
+          done
+      
+      - name: Validate with kubeconform
+        run: |
+          wget -q https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz
+          tar xf kubeconform-linux-amd64.tar.gz
+          sudo mv kubeconform /usr/local/bin
+          
+          kubeconform -summary manifests/*.yaml
+
+  security-scan:
+    name: Security Scanning
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run Trivy security scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'config'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+      
+      - name: Upload Trivy results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+      
+      - name: Kubesec scan
+        run: |
+          for file in manifests/*deployment*.yaml; do
+            echo "Security scanning $file..."
+            docker run -i kubesec/kubesec:latest scan /dev/stdin < "$file" | jq '.[] | .score' || true
+          done
+
+  dry-run:
+    name: Dry Run Deployment
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Helm
+        uses: azure/setup-helm@v3
+      
+      - name: Create k3s cluster
+        uses: AbsaOSS/k3d-action@v2
+        with:
+          cluster-name: "test-cluster"
+          args: >-
+            --config=.k3d/config.yaml
+            --servers 1
+            --agents 1
+      
+      - name: Test manifest deployment
+        run: |
+          # Create namespaces
+          kubectl create namespace dev-core
+          kubectl create namespace prod-core
+          kubectl create namespace argocd
+          
+          # Dry run manifests
+          kubectl apply -f manifests/dev-core-pipeline.yaml --dry-run=server
+          kubectl apply -f manifests/prod-core-pipeline.yaml --dry-run=server
+          
+          # Test Helm chart installation
+          helm install test-dev charts/core-pipeline \
+            -f charts/core-pipeline/values-dev.yaml \
+            -n dev-core \
+            --dry-run
+          
+          helm install test-prod charts/core-pipeline \
+            -f charts/core-pipeline/values-prod.yaml \
+            -n prod-core \
+            --dry-run
+
+  documentation:
+    name: Documentation Check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Check for README updates
+        run: |
+          if ! [ -f README.md ]; then
+            echo "::warning::README.md is missing"
+          fi
+      
+      - name: Generate Helm docs
+        run: |
+          wget -q https://github.com/norwoodj/helm-docs/releases/latest/download/helm-docs_linux_amd64.tar.gz
+          tar xf helm-docs_linux_amd64.tar.gz
+          sudo mv helm-docs /usr/local/bin
+          
+          for chart in charts/*/; do
+            if [ -f "$chart/Chart.yaml" ]; then
+              helm-docs -c "$chart"
+            fi
+          done
+          
+          if ! git diff --quiet; then
+            echo "::warning::Documentation needs updating. Run 'helm-docs' locally."
+          fi
+
+  release:
+    name: Release Charts
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: [yaml-lint, helm-lint, manifest-validation, security-scan]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+      
+      - name: Run chart-releaser
+        uses: helm/chart-releaser-action@v1.6.0
+        with:
+          charts_dir: charts
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"

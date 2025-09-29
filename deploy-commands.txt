@@ -1,0 +1,14 @@
+# Commands to run on the server after SSH login:
+
+# Apply manifests
+kubectl apply -f https://raw.githubusercontent.com/uz0/core-charts/main/manifests/dev-core-pipeline.yaml
+kubectl apply -f https://raw.githubusercontent.com/uz0/core-charts/main/manifests/prod-core-pipeline.yaml
+
+# Delete and recreate ArgoCD applications
+kubectl delete application core-pipeline-dev core-pipeline-prod -n argocd --ignore-not-found
+kubectl apply -f https://raw.githubusercontent.com/uz0/core-charts/main/argocd/applications.yaml
+
+# Check status
+kubectl get all -n dev-core
+kubectl get all -n prod-core
+kubectl get applications -n argocd | grep core-pipeline
