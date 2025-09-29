@@ -1,0 +1,126 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dev-core
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: core-pipeline-config
+  namespace: dev-core
+data:
+  NODE_ENV: "development"
+  LOG_LEVEL: "debug"
+  PORT: "80"
+  SERVICE_VERSION: "1.0.0"
+  KAFKA_BROKERS: "kafka.kafka.svc.cluster.local:9092"
+  POSTGRES_HOST: "postgresql.database.svc.cluster.local"
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB: "core_pipeline_dev"
+  POSTGRES_USER: "core_user"
+  REDIS_HOST: "redis-master.redis.svc.cluster.local"
+  REDIS_PORT: "6379"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: core-pipeline-secrets
+  namespace: dev-core
+type: Opaque
+stringData:
+  POSTGRES_PASSWORD: "core_password_dev"
+  REDIS_PASSWORD: ""
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: core-pipeline
+  namespace: dev-core
+  labels:
+    app: core-pipeline
+    environment: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: core-pipeline
+  template:
+    metadata:
+      labels:
+        app: core-pipeline
+        environment: dev
+    spec:
+      containers:
+      - name: core-pipeline
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+          name: http
+        envFrom:
+        - configMapRef:
+            name: core-pipeline-config
+        - secretRef:
+            name: core-pipeline-secrets
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: core-pipeline
+  namespace: dev-core
+  labels:
+    app: core-pipeline
+spec:
+  type: ClusterIP
+  selector:
+    app: core-pipeline
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: core-pipeline
+  namespace: dev-core
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - core-pipeline.dev.theedgestory.org
+    secretName: core-pipeline-dev-tls
+  rules:
+  - host: core-pipeline.dev.theedgestory.org
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: core-pipeline
+            port:
+              number: 80
