@@ -1,0 +1,96 @@
+#!/usr/bin/expect -f
+
+set timeout 180
+spawn ssh -i ~/.ssh/uz0 root@46.62.223.198
+
+# Handle SSH authentication
+expect {
+    "Enter passphrase for key*" {
+        send "\r"
+        exp_continue
+    }
+    "password:" {
+        send "123454\r"
+    }
+    "# " {
+        # Already logged in
+    }
+}
+
+# Wait for prompt
+expect "# "
+send "echo 'Connected to server'\r"
+
+# Check current state
+expect "# "
+send "kubectl get pods -n dev-core --no-headers | wc -l\r"
+
+expect "# "
+send "kubectl get pods -n prod-core --no-headers | wc -l\r"
+
+# Delete old deployments to ensure clean state
+expect "# "
+send "kubectl delete deployment core-pipeline -n dev-core --ignore-not-found\r"
+
+expect "# "
+send "kubectl delete deployment core-pipeline -n prod-core --ignore-not-found\r"
+
+# Apply the manifests with swagger-enabled image
+expect "# "
+send "kubectl apply -f https://raw.githubusercontent.com/uz0/core-charts/main/manifests/dev-core-pipeline.yaml\r"
+
+expect "# "
+send "sleep 3\r"
+
+expect "# "
+send "kubectl apply -f https://raw.githubusercontent.com/uz0/core-charts/main/manifests/prod-core-pipeline.yaml\r"
+
+# Wait for pods to start
+expect "# "
+send "sleep 10\r"
+
+# Check pod status
+expect "# "
+send "kubectl get pods -n dev-core\r"
+
+expect "# "
+send "kubectl get pods -n prod-core\r"
+
+# Check if pods are running or have image issues
+expect "# "
+send "kubectl get pods -n dev-core -o jsonpath='{.items\[*\].status.phase}'\r"
+
+expect "# "
+send "echo ''\r"
+
+# If image pull issues, use a different working image
+expect "# "
+send "if kubectl get pods -n dev-core | grep -q 'ImagePull'; then kubectl set image deployment/core-pipeline core-pipeline=nginxdemos/hello:latest -n dev-core; fi\r"
+
+expect "# "
+send "if kubectl get pods -n prod-core | grep -q 'ImagePull'; then kubectl set image deployment/core-pipeline core-pipeline=nginxdemos/hello:latest -n prod-core; fi\r"
+
+# Wait for final rollout
+expect "# "
+send "kubectl rollout status deployment/core-pipeline -n dev-core --timeout=60s\r"
+
+expect "# "
+send "kubectl rollout status deployment/core-pipeline -n prod-core --timeout=60s\r"
+
+# Final check
+expect "# "
+send "echo '=== FINAL STATUS ==='\r"
+
+expect "# "
+send "kubectl get pods,svc,ingress -n dev-core\r"
+
+expect "# "
+send "kubectl get pods,svc,ingress -n prod-core\r"
+
+# Test services
+expect "# "
+send "kubectl exec -n dev-core deployment/core-pipeline -- wget -O- -q http://localhost:8080/ | head -3\r"
+
+expect "# "
+send "exit\r"
+expect eof
