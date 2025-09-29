@@ -1,0 +1,90 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: core-pipeline-dev
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+    link.argocd.argoproj.io/external-link: https://core-pipeline.dev.theedgestory.org
+spec:
+  project: default
+  
+  source:
+    repoURL: https://github.com/uz0/core-charts
+    targetRevision: main
+    path: manifests
+    directory:
+      include: 'dev-core-pipeline.yaml'
+  
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: dev-core
+  
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+    - CreateNamespace=true
+    - PrunePropagationPolicy=foreground
+    - ApplyOutOfSyncOnly=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+  
+  revisionHistoryLimit: 10
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: core-pipeline-prod
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+    link.argocd.argoproj.io/external-link: https://core-pipeline.prod.theedgestory.org
+spec:
+  project: default
+  
+  source:
+    repoURL: https://github.com/uz0/core-charts
+    targetRevision: main
+    path: manifests
+    directory:
+      include: 'prod-core-pipeline.yaml'
+  
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: prod-core
+  
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+    - CreateNamespace=true
+    - PrunePropagationPolicy=foreground
+    - ApplyOutOfSyncOnly=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+  
+  revisionHistoryLimit: 10
+  
+  ignoreDifferences:
+  - group: apps
+    kind: Deployment
+    jsonPointers:
+    - /spec/replicas
