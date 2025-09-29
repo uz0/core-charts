@@ -12,7 +12,7 @@ metadata:
 data:
   NODE_ENV: "production"
   LOG_LEVEL: "info"
-  PORT: "3000"
+  PORT: "8080"
   SERVICE_VERSION: "1.0.0"
   KAFKA_BROKERS: "kafka.kafka.svc.cluster.local:9092"
   POSTGRES_HOST: "postgresql.database.svc.cluster.local"
@@ -55,9 +55,9 @@ spec:
       - name: ghcr-secret
       containers:
       - name: core-pipeline
-        image: ghcr.io/uz0/core-pipeline:latest  # Updated by CI/CD
+        image: swaggerapi/petstore3:unstable  # Temporary swagger demo
         ports:
-        - containerPort: 3000
+        - containerPort: 8080
           name: http
         envFrom:
         - configMapRef:
@@ -73,14 +73,14 @@ spec:
             memory: 1Gi
         livenessProbe:
           httpGet:
-            path: /health
-            port: 3000
+            path: /
+            port: 8080
           initialDelaySeconds: 30
           periodSeconds: 10
         readinessProbe:
           httpGet:
-            path: /health
-            port: 3000
+            path: /
+            port: 8080
           initialDelaySeconds: 10
           periodSeconds: 5
 ---
@@ -97,7 +97,7 @@ spec:
     app: core-pipeline
   ports:
   - port: 80
-    targetPort: 3000
+    targetPort: 8080
     protocol: TCP
     name: http
 ---
