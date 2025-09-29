@@ -1,0 +1,40 @@
+name: Update Deployment Image
+
+on:
+  repository_dispatch:
+    types: [update-image]
+
+jobs:
+  update-deployment:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Update image in values
+      run: |
+        environment="${{ github.event.client_payload.environment }}"
+        image_tag="${{ github.event.client_payload.tag }}"
+        repository="${{ github.event.client_payload.repository }}"
+        
+        # Update the appropriate values file
+        if [ "$environment" = "dev" ]; then
+          values_file="charts/core-pipeline/values-dev.yaml"
+        else
+          values_file="charts/core-pipeline/values-prod.yaml"
+        fi
+        
+        # Update image repository and tag
+        sed -i "s|repository: .*|repository: ${repository}|" $values_file
+        sed -i "s|tag: .*|tag: \"${image_tag}\"|" $values_file
+        
+    - name: Commit and push changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add charts/core-pipeline/values-*.yaml
+        git commit -m "chore: Update ${{ github.event.client_payload.environment }} deployment to ${{ github.event.client_payload.tag }}"
+        git push

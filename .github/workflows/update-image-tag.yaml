@@ -1,0 +1,47 @@
+name: Update Image Tag
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to update (dev/prod)'
+        required: true
+        type: choice
+        options:
+          - dev
+          - prod
+      image_tag:
+        description: 'New image tag'
+        required: true
+        type: string
+      repository:
+        description: 'Image repository'
+        required: false
+        default: 'ghcr.io/uz0/core-pipeline'
+        type: string
+
+jobs:
+  update-tag:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Update tag file
+      run: |
+        cat > charts/core-pipeline/${{ github.event.inputs.environment }}.tag.yaml <<EOF
+        image:
+          tag: "${{ github.event.inputs.image_tag }}"
+          repository: "${{ github.event.inputs.repository }}"
+        EOF
+        
+    - name: Commit and push changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add charts/core-pipeline/${{ github.event.inputs.environment }}.tag.yaml
+        git commit -m "chore: Update ${{ github.event.inputs.environment }} image tag to ${{ github.event.inputs.image_tag }}"
+        git push

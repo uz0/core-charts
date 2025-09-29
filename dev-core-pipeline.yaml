@@ -8,33 +8,13 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/uz0/core-pipeline.git'
-    targetRevision: main
-    path: deploy/helm/core-pipeline
+    repoURL: 'https://github.com/uz0/core-charts.git'
+    targetRevision: deploy-core-pipeline
+    path: charts/core-pipeline
     helm:
       valueFiles:
         - values.yaml
         - values-dev.yaml
-      values: |
-        image:
-          repository: ghcr.io/uz0/core-pipeline
-          tag: latest
-          pullPolicy: Always
-        ingress:
-          enabled: true
-          className: nginx
-          hosts:
-            - host: core-pipeline.dev.example.com
-              paths:
-                - path: /
-                  pathType: Prefix
-        resources:
-          requests:
-            cpu: 100m
-            memory: 128Mi
-          limits:
-            cpu: 200m
-            memory: 256Mi
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: dev-core
