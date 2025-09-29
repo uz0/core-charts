@@ -7,10 +7,11 @@ spec:
   project: default
   source:
     repoURL: 'https://github.com/uz0/core-charts.git'
-    targetRevision: main
+    targetRevision: deploy-core-pipeline
     path: charts/core-pipeline
     helm:
       valueFiles:
+        - values.yaml
         - values-prod.yaml
   destination:
     server: 'https://kubernetes.default.svc'
