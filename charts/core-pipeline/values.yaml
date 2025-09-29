@@ -68,8 +68,7 @@ autoscaling:
   targetMemoryUtilizationPercentage: 80
 
 livenessProbe:
-  httpGet:
-    path: /health
+  tcpSocket:
     port: http
   initialDelaySeconds: 30
   periodSeconds: 10
@@ -77,8 +76,7 @@ livenessProbe:
   failureThreshold: 3
 
 readinessProbe:
-  httpGet:
-    path: /ok
+  tcpSocket:
     port: http
   initialDelaySeconds: 10
   periodSeconds: 5
@@ -86,8 +84,7 @@ readinessProbe:
   failureThreshold: 3
 
 startupProbe:
-  httpGet:
-    path: /health
+  tcpSocket:
     port: http
   initialDelaySeconds: 0
   periodSeconds: 10
@@ -103,6 +100,9 @@ env:
   NODE_ENV: production
   PORT: "3000"
   LOG_LEVEL: info
+  API_PREFIX: ""
+  SWAGGER_ENABLED: "true"
+  SWAGGER_PATH: "swagger"
   METRICS_ENABLED: "true"
   TRACING_ENABLED: "true"
   OTEL_SERVICE_NAME: core-pipeline

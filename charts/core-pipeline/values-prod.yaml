@@ -2,23 +2,27 @@
 replicaCount: 3
 
 image:
-  pullPolicy: IfNotPresent
+  repository: ghcr.io/uz0/core-pipeline
+  tag: "latest"
+  pullPolicy: Always
 
 ingress:
   enabled: true
+  className: nginx
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
     nginx.ingress.kubernetes.io/rate-limit: "100"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
   hosts:
-    - host: core-pipeline.example.com
+    - host: core-pipeline.theedgestory.org
       paths:
         - path: /
           pathType: Prefix
   tls:
     - secretName: core-pipeline-tls
       hosts:
-        - core-pipeline.example.com
+        - core-pipeline.theedgestory.org
 
 resources:
   requests:
