@@ -1,11 +1,9 @@
 # Development environment overrides
 replicaCount: 1
-
 image:
   repository: swaggerapi/petstore3
-  tag: "unstable"
+  tag: "fix-cicd-helm-deployment"
   pullPolicy: Always
-
 ingress:
   enabled: true
   className: nginx
@@ -22,7 +20,6 @@ ingress:
     - secretName: core-pipeline-dev-tls
       hosts:
         - core-pipeline.dev.theedgestory.org
-
 resources:
   requests:
     cpu: 100m
@@ -30,10 +27,8 @@ resources:
   limits:
     cpu: 200m
     memory: 256Mi
-
 autoscaling:
   enabled: false
-
 env:
   NODE_ENV: development
   LOG_LEVEL: debug
@@ -59,16 +54,12 @@ env:
   # Redis - Dev environment
   REDIS_HOST: redis-master.redis.svc.cluster.local
   REDIS_PORT: "6379"
-  
 persistence:
   enabled: false
-
 networkPolicy:
   enabled: false
-
 serviceMonitor:
   enabled: false
-
 secrets:
   POSTGRES_PASSWORD: core_password_dev
   REDIS_PASSWORD: ""
