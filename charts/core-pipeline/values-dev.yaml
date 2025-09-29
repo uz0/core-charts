@@ -37,6 +37,28 @@ autoscaling:
 env:
   NODE_ENV: development
   LOG_LEVEL: debug
+  LOG_PRETTY: "true"
+  PORT: "3000"
+  METRICS_ENABLED: "true"
+  METRICS_PREFIX: core_pipeline
+  TRACING_ENABLED: "true"
+  OTEL_SERVICE_NAME: core-pipeline-dev
+  OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo.monitoring:4318
+  SERVICE_VERSION: "1.0.0"
+  # Kafka - Dev environment
+  KAFKA_BROKERS: kafka.kafka.svc.cluster.local:9092
+  KAFKA_BROKER: kafka.kafka.svc.cluster.local:9092
+  KAFKA_CLIENT_ID: core-pipeline-dev
+  KAFKA_GROUP_ID: core-pipeline-dev-group
+  KAFKA_CONSUMER_GROUP: core-pipeline-dev-group
+  # PostgreSQL - Dev environment
+  POSTGRES_HOST: postgresql.database.svc.cluster.local
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB: core_pipeline_dev
+  POSTGRES_USER: core_user
+  # Redis - Dev environment
+  REDIS_HOST: redis-master.redis.svc.cluster.local
+  REDIS_PORT: "6379"
   
 persistence:
   enabled: false
@@ -46,3 +68,7 @@ networkPolicy:
 
 serviceMonitor:
   enabled: false
+
+secrets:
+  POSTGRES_PASSWORD: core_password_dev
+  REDIS_PASSWORD: ""
