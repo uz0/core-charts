@@ -1,31 +1,28 @@
-# Core Pipeline Infrastructure
+# Core Pipeline Deployment
 
-## Repository Structure
-- `charts/core-pipeline/` - Helm chart for core-pipeline application
-- `dev-core-pipeline.yaml` - ArgoCD application for development environment
-- `prod-core-pipeline.yaml` - ArgoCD application for production environment
+## Quick Deploy
 
-## Server Access
+SSH to your server and run:
+
 ```bash
-ssh -i ~/.ssh/uz0 root@46.62.223.198
-# Passphrase: 123454
+# Apply manifests
+kubectl apply -f https://raw.githubusercontent.com/uz0/core-charts/main/manifests/dev-core-pipeline.yaml
+kubectl apply -f https://raw.githubusercontent.com/uz0/core-charts/main/manifests/prod-core-pipeline.yaml
+
+# Fix ArgoCD
+kubectl delete application core-pipeline-dev core-pipeline-prod -n argocd --ignore-not-found
+kubectl apply -f https://raw.githubusercontent.com/uz0/core-charts/main/argocd/applications.yaml
 ```
 
-## Service URLs
-- **ArgoCD**: http://46.62.223.198:30113 (admin / use `argocd admin initial-password -n argocd`)
-- **Grafana**: http://46.62.223.198:30082 (admin / prom-operator)
-- **Prometheus**: http://46.62.223.198:30090
-- **Kafka UI**: http://46.62.223.198:30888
-- **Loki**: http://46.62.223.198:30324
-- **Tempo**: http://46.62.223.198:30317
+## Files
 
-## Deployed Services
-- PostgreSQL (database namespace)
-- Redis (redis namespace)
-- Kafka (kafka namespace)
-- Core Pipeline (dev-core and prod-core namespaces)
-- Monitoring Stack (Prometheus, Grafana, Loki, Tempo)
-- ArgoCD for GitOps
+- `manifests/` - Kubernetes resources
+- `argocd/` - ArgoCD applications
+- `core-pipeline-ci-cd/` - CI/CD files for core-pipeline repo
+- `charts/` - Helm charts (optional)
 
-## Deploy Changes
-Push changes to the repository and ArgoCD will automatically sync them.
+## Issue
+
+The GitHub repository `uz0/core-charts` is PRIVATE, so ArgoCD can't access it without authentication.
+
+To fix: Either make the repo public or add GitHub token to ArgoCD.
