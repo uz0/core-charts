@@ -114,10 +114,10 @@ spec:
   ingressClassName: nginx
   tls:
   - hosts:
-    - core-pipeline.prod.theedgestory.org
-    secretName: core-pipeline-prod-tls
+    - core-pipeline.theedgestory.org
+    secretName: core-pipeline-tls
   rules:
-  - host: core-pipeline.prod.theedgestory.org
+  - host: core-pipeline.theedgestory.org
     http:
       paths:
       - path: /
