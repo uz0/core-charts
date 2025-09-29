@@ -15,9 +15,12 @@ spec:
   source:
     repoURL: https://github.com/uz0/core-charts
     targetRevision: main
-    path: manifests
-    directory:
-      include: 'dev-core-pipeline.yaml'
+    path: charts/core-pipeline
+    helm:
+      valueFiles:
+      - values.yaml
+      - values-dev.yaml
+      - ../../dev.tag.yaml
   
   destination:
     server: https://kubernetes.default.svc
@@ -57,9 +60,12 @@ spec:
   source:
     repoURL: https://github.com/uz0/core-charts
     targetRevision: main
-    path: manifests
-    directory:
-      include: 'prod-core-pipeline.yaml'
+    path: charts/core-pipeline
+    helm:
+      valueFiles:
+      - values.yaml
+      - values-prod.yaml
+      - ../../prod.tag.yaml
   
   destination:
     server: https://kubernetes.default.svc
