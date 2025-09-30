@@ -12,9 +12,7 @@ kafka:
   controller:
     replicaCount: 1
     persistence:
-      enabled: true
-      size: 8Gi
-      storageClass: "standard"
+      enabled: false
     resources:
       requests:
         memory: "256Mi"
@@ -27,9 +25,7 @@ kafka:
   broker:
     replicaCount: 1
     persistence:
-      enabled: true
-      size: 20Gi
-      storageClass: "standard"
+      enabled: false
     resources:
       requests:
         memory: "512Mi"
