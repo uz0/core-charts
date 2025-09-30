@@ -25,7 +25,8 @@ data:
     fi
 
     # Create user and database for {{ .name }}
-    PGPASSWORD=$POSTGRES_PASSWORD psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
+    # Bitnami PostgreSQL superuser is always 'postgres'
+    PGPASSWORD=$POSTGRES_PASSWORD psql -v ON_ERROR_STOP=1 --username "postgres" <<-EOSQL
       -- Check if user exists before creating
       DO \$\$
       BEGIN
