@@ -1,8 +1,6 @@
 # Development environment overrides
 replicaCount: 1
 image:
-  repository: swaggerapi/petstore3
-  tag: "fix-cicd-helm-deployment"
   pullPolicy: Always
 ingress:
   enabled: true

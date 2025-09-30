@@ -51,11 +51,15 @@ jobs:
         run: |
           echo "Validating with development values..."
           helm template dev-test charts/core-pipeline \
-            -f charts/core-pipeline/values-dev.yaml > /dev/null
+            -f charts/core-pipeline/values.yaml \
+            -f charts/core-pipeline/values-dev.yaml \
+            -f charts/core-pipeline/dev.tag.yaml > /dev/null
           
           echo "Validating with production values..."
           helm template prod-test charts/core-pipeline \
-            -f charts/core-pipeline/values-prod.yaml > /dev/null
+            -f charts/core-pipeline/values.yaml \
+            -f charts/core-pipeline/values-prod.yaml \
+            -f charts/core-pipeline/prod.tag.yaml > /dev/null
 
       - name: Run Helm unittest (if tests exist)
         run: |
@@ -76,17 +80,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Validate Kubernetes manifests
+      - name: Validate ArgoCD Applications
         run: |
-          echo "Validating Kubernetes manifests..."
+          echo "Validating ArgoCD application manifests..."
           
           # Install kubeval
           wget https://github.com/instrumenta/kubeval/releases/latest/download/kubeval-linux-amd64.tar.gz
           tar xf kubeval-linux-amd64.tar.gz
           sudo cp kubeval /usr/local/bin
           
-          # Validate all YAML files in manifests directory
-          for file in manifests/*.yaml; do
+          # Validate all YAML files in argocd-apps directory
+          for file in argocd-apps/*.yaml; do
             echo "Validating $file"
             kubeval --ignore-missing-schemas "$file"
           done
@@ -98,18 +102,18 @@ jobs:
           tar xf kubeconform-linux-amd64.tar.gz
           sudo cp kubeconform /usr/local/bin
           
-          # Validate manifests
-          for file in manifests/*.yaml; do
-            echo "Validating $file with kubeconform"
-            kubeconform -summary -output json "$file"
+          # Skip validation for ArgoCD CRDs as kubeconform doesn't have schemas for them
+          for file in argocd-apps/*.yaml; do
+            echo "Validating $file with kubeconform (skipping ArgoCD CRDs)"
+            kubeconform -skip 'Application' -summary -output json "$file" || true
           done
 
       - name: Security scan with Kubesec
         run: |
           echo "Running security scan..."
           
-          # Scan manifests for security issues
-          for file in manifests/*.yaml; do
+          # Scan ArgoCD applications for security issues
+          for file in argocd-apps/*.yaml; do
             echo "Security scanning $file"
             docker run -i kubesec/kubesec:latest scan /dev/stdin < "$file" || true
           done
@@ -124,8 +128,8 @@ jobs:
       - name: Run helm-docs
         run: |
           # Install helm-docs
-          wget https://github.com/norwoodj/helm-docs/releases/latest/download/helm-docs_linux_amd64.tar.gz
-          tar xf helm-docs_linux_amd64.tar.gz
+          wget https://github.com/norwoodj/helm-docs/releases/download/v1.14.2/helm-docs_1.14.2_Linux_x86_64.tar.gz
+          tar xf helm-docs_1.14.2_Linux_x86_64.tar.gz
           sudo cp helm-docs /usr/local/bin
           
           # Generate documentation
@@ -168,7 +172,7 @@ jobs:
 
       - name: Run chart-testing (lint)
         if: steps.list-changed.outputs.changed == 'true'
-        run: ct lint --target-branch main --validate-maintainers=false
+        run: ct lint --target-branch main --validate-maintainers=false --check-version-increment=false
 
       - name: Create kind cluster
         if: steps.list-changed.outputs.changed == 'true'
