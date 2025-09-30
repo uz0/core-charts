@@ -4,6 +4,12 @@ image:
   pullPolicy: Always
 imagePullSecrets:
   - name: ghcr-secret
+
+# Inject all credentials from secret
+envFrom:
+  - secretRef:
+      name: all-credentials
+
 ingress:
   enabled: true
   className: nginx
