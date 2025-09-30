@@ -4,7 +4,10 @@ redis:
 
   auth:
     enabled: true
-    password: "redis-secret-password-2024"
+    # Password will be auto-generated if not set
+    password: ""
+    existingSecret: ""
+    existingSecretPasswordKey: ""
 
   master:
     persistence:

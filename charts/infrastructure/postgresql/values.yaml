@@ -1,8 +1,11 @@
 # PostgreSQL configuration with automatic database and user creation
 postgresql:
   auth:
-    postgresPassword: "postgres123"
+    # Password will be auto-generated if not set
+    postgresPassword: ""
     database: "postgres"
+    # Enable automatic password generation
+    existingSecret: ""
 
   primary:
     persistence:
@@ -18,19 +21,9 @@ postgresql:
         memory: "512Mi"
         cpu: "500m"
 
-    # Init scripts to create databases and users
+    # Init scripts mount from ConfigMap
     initdb:
-      scripts:
-        01-init-databases.sql: |
-          -- Create databases and users for development environment
-          CREATE USER core_user WITH PASSWORD 'core_password_dev';
-          CREATE DATABASE core_pipeline_dev OWNER core_user;
-          GRANT ALL PRIVILEGES ON DATABASE core_pipeline_dev TO core_user;
-
-          -- Create databases and users for production environment
-          CREATE USER core_user_prod WITH PASSWORD 'core_password_prod';
-          CREATE DATABASE core_pipeline_prod OWNER core_user_prod;
-          GRANT ALL PRIVILEGES ON DATABASE core_pipeline_prod TO core_user_prod;
+      scriptsConfigMap: "{{ .Release.Name }}-postgresql-init"
 
   volumePermissions:
     enabled: true
@@ -41,10 +34,11 @@ postgresql:
       enabled: false
 
 # List of additional databases to create
+# Passwords will be auto-generated if not provided
 databases:
   - name: core_pipeline_dev
     user: core_user
-    password: core_password_dev
+    # Password will be generated automatically
   - name: core_pipeline_prod
     user: core_user_prod
-    password: core_password_prod
+    # Password will be generated automatically
