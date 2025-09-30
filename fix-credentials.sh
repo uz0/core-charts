@@ -15,18 +15,18 @@ echo "✓ Got Redis password: ${REDIS_PASSWORD:0:5}..."
 POSTGRES_PASSWORD=$(kubectl get secret postgresql -n database -o jsonpath='{.data.postgres-password}' | base64 -d)
 echo "✓ Got PostgreSQL admin password: ${POSTGRES_PASSWORD:0:5}..."
 
-# Get core_user password for dev
-DB_PASSWORD_DEV=$(kubectl get secret postgresql-core-pipeline-dev -n database -o jsonpath='{.data.password}' | base64 -d 2>/dev/null || echo "")
+# Get core_user password for dev (secret name format: postgres-{dbname}-secret)
+DB_PASSWORD_DEV=$(kubectl get secret postgres-core-pipeline-dev-secret -n database -o jsonpath='{.data.DB_PASSWORD}' | base64 -d 2>/dev/null || echo "")
 if [ -z "$DB_PASSWORD_DEV" ]; then
-  echo "⚠ postgresql-core-pipeline-dev secret not found, using postgres password"
+  echo "⚠ postgres-core-pipeline-dev-secret not found, using postgres password"
   DB_PASSWORD_DEV="$POSTGRES_PASSWORD"
 fi
 echo "✓ Got Dev DB password: ${DB_PASSWORD_DEV:0:5}..."
 
 # Get core_user password for prod
-DB_PASSWORD_PROD=$(kubectl get secret postgresql-core-pipeline-prod -n database -o jsonpath='{.data.password}' | base64 -d 2>/dev/null || echo "")
+DB_PASSWORD_PROD=$(kubectl get secret postgres-core-pipeline-prod-secret -n database -o jsonpath='{.data.DB_PASSWORD}' | base64 -d 2>/dev/null || echo "")
 if [ -z "$DB_PASSWORD_PROD" ]; then
-  echo "⚠ postgresql-core-pipeline-prod secret not found, using postgres password"
+  echo "⚠ postgres-core-pipeline-prod-secret not found, using postgres password"
   DB_PASSWORD_PROD="$POSTGRES_PASSWORD"
 fi
 echo "✓ Got Prod DB password: ${DB_PASSWORD_PROD:0:5}..."
