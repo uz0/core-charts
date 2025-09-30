@@ -153,6 +153,7 @@ jobs:
             -f charts/core-pipeline/values.yaml \
             -f charts/core-pipeline/values-prod.yaml \
             -f charts/core-pipeline/prod.tag.yaml \
+            --set serviceMonitor.enabled=false \
             -n prod-core \
             --dry-run
 
