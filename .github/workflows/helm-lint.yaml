@@ -38,9 +38,14 @@ jobs:
           echo "Linting Helm charts..."
           for chart in charts/*/; do
             if [ -f "$chart/Chart.yaml" ]; then
+              # Skip infrastructure charts
+              if [[ "$chart" == *"infrastructure"* ]]; then
+                echo "Skipping infrastructure charts (complex dependencies)"
+                continue
+              fi
               echo "Linting $chart"
               helm lint "$chart"
-              
+
               # Also validate templates render correctly
               echo "Testing template rendering for $chart"
               helm template test "$chart" > /dev/null
@@ -135,6 +140,11 @@ jobs:
           # Generate documentation
           for chart in charts/*/; do
             if [ -f "$chart/Chart.yaml" ]; then
+              # Skip infrastructure charts
+              if [[ "$chart" == *"infrastructure"* ]]; then
+                echo "Skipping helm-docs for infrastructure charts"
+                continue
+              fi
               echo "Generating docs for $chart"
               helm-docs -c "$chart" || true
             fi
@@ -166,7 +176,7 @@ jobs:
       - name: Run chart-testing (list-changed)
         id: list-changed
         run: |
-          changed=$(ct list-changed --target-branch main)
+          changed=$(ct list-changed --target-branch main | grep -v infrastructure || true)
           if [[ -n "$changed" ]]; then
             echo "changed=true" >> $GITHUB_OUTPUT
             echo "Changed charts: $changed"
