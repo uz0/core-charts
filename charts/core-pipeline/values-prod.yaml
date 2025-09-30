@@ -3,6 +3,8 @@ replicaCount: 2
 
 image:
   pullPolicy: Always
+imagePullSecrets:
+  - name: ghcr-secret
 
 ingress:
   enabled: true
@@ -103,3 +105,9 @@ podDisruptionBudget:
 secrets:
   POSTGRES_PASSWORD: core_password_prod
   REDIS_PASSWORD: ""
+
+# GitHub Container Registry credentials
+# These should be provided via --set during helm install or via sealed-secrets
+ghcrCredentials:
+  username: "uz0"  # GitHub username
+  password: ""  # GitHub PAT with read:packages scope
