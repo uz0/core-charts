@@ -2,8 +2,7 @@
 replicaCount: 1
 image:
   pullPolicy: Always
-imagePullSecrets:
-  - name: ghcr-secret
+imagePullSecrets: []
 ingress:
   enabled: true
   className: nginx

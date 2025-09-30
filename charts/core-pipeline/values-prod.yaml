@@ -3,8 +3,7 @@ replicaCount: 2
 
 image:
   pullPolicy: Always
-imagePullSecrets:
-  - name: ghcr-secret
+imagePullSecrets: []
 
 ingress:
   enabled: true
