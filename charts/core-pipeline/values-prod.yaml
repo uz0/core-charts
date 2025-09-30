@@ -2,8 +2,6 @@
 replicaCount: 2
 
 image:
-  repository: swaggerapi/petstore3
-  tag: "unstable"
   pullPolicy: Always
 
 ingress:

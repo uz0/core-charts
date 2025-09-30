@@ -14,16 +14,13 @@ spec:
   project: applications
   source:
     helm:
-      values: |
-        image:
-          repository: nginx
-          tag: latest
-        service:
-          port: 8080
-        env: dev
+      valueFiles:
+        - values.yaml
+        - values-dev.yaml
+        - dev.tag.yaml
     path: charts/core-pipeline
     repoURL: https://github.com/uz0/core-charts
-    targetRevision: add-dev-ui
+    targetRevision: main
   syncPolicy:
     automated:
       prune: true
