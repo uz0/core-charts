@@ -1,5 +1,11 @@
 # PostgreSQL configuration with automatic database and user creation
 postgresql:
+  # Override image to use latest stable version
+  image:
+    registry: docker.io
+    repository: bitnami/postgresql
+    tag: 15.4.0-debian-11-r45
+
   auth:
     # Password will be auto-generated if not set
     postgresPassword: ""
@@ -27,6 +33,10 @@ postgresql:
 
   volumePermissions:
     enabled: true
+    image:
+      registry: docker.io
+      repository: bitnami/os-shell
+      tag: 11-debian-11-r96
 
   metrics:
     enabled: true
