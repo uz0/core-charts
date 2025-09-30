@@ -31,5 +31,3 @@ environments:
     namespace: dev-core
   - name: prod
     namespace: prod-core
-  - name: staging
-    namespace: staging-core

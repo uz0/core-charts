@@ -20,7 +20,7 @@ spec:
               echo "Syncing secrets across namespaces..."
 
               # Target namespaces
-              NAMESPACES="dev-core prod-core staging-core"
+              NAMESPACES="dev-core prod-core"
 
               for ns in $NAMESPACES; do
                 echo "Syncing to namespace: $ns"
@@ -33,8 +33,6 @@ spec:
                   ENV="dev"
                 elif [[ "$ns" == *"prod"* ]]; then
                   ENV="prod"
-                else
-                  ENV="staging"
                 fi
 
                 # Sync PostgreSQL secret

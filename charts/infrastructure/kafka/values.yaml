@@ -58,6 +58,3 @@ environments:
   - name: prod
     clientId: core-pipeline-prod
     consumerGroup: core-pipeline-prod-group
-  - name: staging
-    clientId: core-pipeline-staging
-    consumerGroup: core-pipeline-staging-group

@@ -19,10 +19,9 @@ spec:
           # Create namespaces if they don't exist
           kubectl create namespace dev-core --dry-run=client -o yaml | kubectl apply -f -
           kubectl create namespace prod-core --dry-run=client -o yaml | kubectl apply -f -
-          kubectl create namespace staging-core --dry-run=client -o yaml | kubectl apply -f -
 
           # Replicate PostgreSQL secrets to application namespaces
-          for ns in dev-core prod-core staging-core; do
+          for ns in dev-core prod-core; do
             echo "Replicating secrets to namespace: $ns"
 
             # Copy PostgreSQL secrets from database namespace
@@ -31,10 +30,6 @@ spec:
               kubectl apply -f - || true
 
             kubectl get secret -n database postgres-core-pipeline-prod-secret -o yaml | \
-              sed "s/namespace: database/namespace: $ns/" | \
-              kubectl apply -f - || true
-
-            kubectl get secret -n database postgres-core-pipeline-staging-secret -o yaml | \
               sed "s/namespace: database/namespace: $ns/" | \
               kubectl apply -f - || true
 
@@ -47,20 +42,12 @@ spec:
               sed "s/namespace: redis/namespace: $ns/" | \
               kubectl apply -f - || true
 
-            kubectl get secret -n redis redis-staging-secret -o yaml | \
-              sed "s/namespace: redis/namespace: $ns/" | \
-              kubectl apply -f - || true
-
             # Copy Kafka secrets from kafka namespace
             kubectl get secret -n kafka kafka-dev-secret -o yaml | \
               sed "s/namespace: kafka/namespace: $ns/" | \
               kubectl apply -f - || true
 
             kubectl get secret -n kafka kafka-prod-secret -o yaml | \
-              sed "s/namespace: kafka/namespace: $ns/" | \
-              kubectl apply -f - || true
-
-            kubectl get secret -n kafka kafka-staging-secret -o yaml | \
               sed "s/namespace: kafka/namespace: $ns/" | \
               kubectl apply -f - || true
           done

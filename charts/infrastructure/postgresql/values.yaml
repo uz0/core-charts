@@ -32,11 +32,6 @@ postgresql:
           CREATE DATABASE core_pipeline_prod OWNER core_user_prod;
           GRANT ALL PRIVILEGES ON DATABASE core_pipeline_prod TO core_user_prod;
 
-          -- Create databases and users for staging if needed
-          CREATE USER core_user_staging WITH PASSWORD 'core_password_staging';
-          CREATE DATABASE core_pipeline_staging OWNER core_user_staging;
-          GRANT ALL PRIVILEGES ON DATABASE core_pipeline_staging TO core_user_staging;
-
   volumePermissions:
     enabled: true
 
@@ -53,6 +48,3 @@ databases:
   - name: core_pipeline_prod
     user: core_user_prod
     password: core_password_prod
-  - name: core_pipeline_staging
-    user: core_user_staging
-    password: core_password_staging
