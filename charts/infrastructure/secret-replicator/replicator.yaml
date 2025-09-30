@@ -9,7 +9,7 @@ spec:
       serviceAccountName: secret-replicator
       containers:
       - name: replicator
-        image: bitnami/kubectl:latest
+        image: bitnami/kubectl:1.28
         command:
         - /bin/bash
         - -c
