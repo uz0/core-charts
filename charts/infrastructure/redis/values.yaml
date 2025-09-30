@@ -11,9 +11,7 @@ redis:
 
   master:
     persistence:
-      enabled: true
-      size: 8Gi
-      storageClass: "standard"
+      enabled: false
 
     resources:
       requests:
@@ -24,7 +22,7 @@ redis:
         cpu: "250m"
 
   metrics:
-    enabled: true
+    enabled: false
     serviceMonitor:
       enabled: false
 

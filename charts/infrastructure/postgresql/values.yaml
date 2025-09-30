@@ -15,9 +15,7 @@ postgresql:
 
   primary:
     persistence:
-      enabled: true
-      size: 10Gi
-      storageClass: "standard"
+      enabled: false
 
     resources:
       requests:
@@ -32,14 +30,10 @@ postgresql:
       scriptsConfigMap: "{{ .Release.Name }}-postgresql-init"
 
   volumePermissions:
-    enabled: true
-    image:
-      registry: docker.io
-      repository: bitnami/os-shell
-      tag: 11-debian-11-r96
+    enabled: false
 
   metrics:
-    enabled: true
+    enabled: false
     serviceMonitor:
       enabled: false
 
