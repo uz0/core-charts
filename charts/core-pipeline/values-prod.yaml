@@ -85,41 +85,42 @@ env:
   TRACING_ENABLED: "true"
 
 persistence:
-  enabled: true
-  size: 10Gi
-  storageClass: fast-ssd
+  enabled: false
 
 networkPolicy:
-  enabled: true
-  policyTypes:
-    - Ingress
-    - Egress
-  ingress:
-    - from:
-      - namespaceSelector:
-          matchLabels:
-            name: ingress-nginx
-  egress:
-    - to:
-      - namespaceSelector:
-          matchLabels:
-            name: database
-    - to:
-      - namespaceSelector:
-          matchLabels:
-            name: redis
-    - to:
-      - namespaceSelector:
-          matchLabels:
-            name: kafka
+  enabled: false
 
 serviceMonitor:
-  enabled: true
-  interval: 30s
+  enabled: false
 
-podDisruptionBudget:
-  enabled: true
-  minAvailable: 2
+# Health check configuration (same as dev for consistency)
+livenessProbe:
+  httpGet:
+    path: /health/liveness
+    port: 3000
+  initialDelaySeconds: 60
+  periodSeconds: 30
+  timeoutSeconds: 10
+  failureThreshold: 5
+
+readinessProbe:
+  httpGet:
+    path: /health/readiness
+    port: 3000
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 5
+
+startupProbe:
+  httpGet:
+    path: /health
+    port: 3000
+  initialDelaySeconds: 15
+  periodSeconds: 10
+  timeoutSeconds: 10
+  failureThreshold: 30
+  successThreshold: 1
 
 secrets:
   # Database password

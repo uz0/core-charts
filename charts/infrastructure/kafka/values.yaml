@@ -1,26 +1,42 @@
-# Kafka configuration with automatic topic creation
+# Kafka configuration with KRaft mode (no Zookeeper)
 kafka:
-  replicaCount: 3
-
-  persistence:
+  # KRaft mode configuration
+  kraft:
     enabled: true
-    size: 20Gi
-    storageClass: "standard"
 
-  resources:
-    requests:
-      memory: "512Mi"
-      cpu: "250m"
-    limits:
-      memory: "1Gi"
-      cpu: "500m"
-
+  # Disable Zookeeper (using KRaft instead)
   zookeeper:
-    enabled: true
-    replicaCount: 3
+    enabled: false
+
+  # Controller nodes (required for KRaft)
+  controller:
+    replicaCount: 1
     persistence:
       enabled: true
       size: 8Gi
+      storageClass: "standard"
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "100m"
+      limits:
+        memory: "512Mi"
+        cpu: "250m"
+
+  # Broker nodes
+  broker:
+    replicaCount: 1
+    persistence:
+      enabled: true
+      size: 20Gi
+      storageClass: "standard"
+    resources:
+      requests:
+        memory: "512Mi"
+        cpu: "250m"
+      limits:
+        memory: "1Gi"
+        cpu: "500m"
 
   metrics:
     kafka:
@@ -35,18 +51,18 @@ kafka:
     enabled: true
     topics:
       - name: core-pipeline-events
-        partitions: 10
-        replicationFactor: 3
+        partitions: 3
+        replicationFactor: 1
         config:
           retention.ms: "604800000"  # 7 days
       - name: core-pipeline-commands
-        partitions: 5
-        replicationFactor: 3
+        partitions: 3
+        replicationFactor: 1
         config:
           retention.ms: "604800000"
       - name: core-pipeline-logs
-        partitions: 20
-        replicationFactor: 2
+        partitions: 3
+        replicationFactor: 1
         config:
           retention.ms: "259200000"  # 3 days
 
