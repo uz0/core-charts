@@ -68,7 +68,7 @@ autoscaling:
 
 livenessProbe:
   httpGet:
-    path: /health
+    path: /health/liveness
     port: 3000
   initialDelaySeconds: 60
   periodSeconds: 10
@@ -77,7 +77,7 @@ livenessProbe:
 
 readinessProbe:
   httpGet:
-    path: /health
+    path: /health/readiness
     port: 3000
   initialDelaySeconds: 30
   periodSeconds: 5
