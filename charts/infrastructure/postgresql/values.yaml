@@ -26,9 +26,9 @@ postgresql:
         memory: "512Mi"
         cpu: "500m"
 
-    # Disable init scripts (causing missing configmap error)
+    # Enable init scripts to create databases and users
     initdb:
-      scripts: {}
+      scriptsConfigMap: "postgresql-postgresql-init"
 
   # Disable volume permissions init container
   volumePermissions:
