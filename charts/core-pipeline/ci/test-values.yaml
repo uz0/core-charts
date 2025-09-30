@@ -38,16 +38,24 @@ podDisruptionBudget:
 livenessProbe:
   httpGet:
     path: /
-    port: http
+    port: 80
   initialDelaySeconds: 10
   periodSeconds: 10
 
 readinessProbe:
   httpGet:
     path: /
-    port: http
+    port: 80
   initialDelaySeconds: 5
   periodSeconds: 5
+
+startupProbe:
+  httpGet:
+    path: /
+    port: 80
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  failureThreshold: 10
 
 # Basic service configuration
 service:
@@ -63,6 +71,12 @@ securityContext:
     drop:
     - ALL
   readOnlyRootFilesystem: false  # nginx needs write access to /var/cache/nginx
-  runAsNonRoot: true
-  runAsUser: 101  # nginx user
+  runAsNonRoot: false  # nginx needs to run as root to create directories
+  runAsUser: 0  # root user for nginx to work properly
   allowPrivilegeEscalation: false
+
+# Also override pod security context
+podSecurityContext:
+  runAsNonRoot: false
+  runAsUser: 0
+  fsGroup: 0
