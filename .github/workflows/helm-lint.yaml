@@ -76,17 +76,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Validate Kubernetes manifests
+      - name: Validate ArgoCD Applications
         run: |
-          echo "Validating Kubernetes manifests..."
+          echo "Validating ArgoCD application manifests..."
           
           # Install kubeval
           wget https://github.com/instrumenta/kubeval/releases/latest/download/kubeval-linux-amd64.tar.gz
           tar xf kubeval-linux-amd64.tar.gz
           sudo cp kubeval /usr/local/bin
           
-          # Validate all YAML files in manifests directory
-          for file in manifests/*.yaml; do
+          # Validate all YAML files in argocd-apps directory
+          for file in argocd-apps/*.yaml; do
             echo "Validating $file"
             kubeval --ignore-missing-schemas "$file"
           done
@@ -98,8 +98,8 @@ jobs:
           tar xf kubeconform-linux-amd64.tar.gz
           sudo cp kubeconform /usr/local/bin
           
-          # Validate manifests
-          for file in manifests/*.yaml; do
+          # Validate ArgoCD applications
+          for file in argocd-apps/*.yaml; do
             echo "Validating $file with kubeconform"
             kubeconform -summary -output json "$file"
           done
@@ -108,8 +108,8 @@ jobs:
         run: |
           echo "Running security scan..."
           
-          # Scan manifests for security issues
-          for file in manifests/*.yaml; do
+          # Scan ArgoCD applications for security issues
+          for file in argocd-apps/*.yaml; do
             echo "Security scanning $file"
             docker run -i kubesec/kubesec:latest scan /dev/stdin < "$file" || true
           done
@@ -124,8 +124,8 @@ jobs:
       - name: Run helm-docs
         run: |
           # Install helm-docs
-          wget https://github.com/norwoodj/helm-docs/releases/latest/download/helm-docs_linux_amd64.tar.gz
-          tar xf helm-docs_linux_amd64.tar.gz
+          wget https://github.com/norwoodj/helm-docs/releases/download/v1.14.2/helm-docs_1.14.2_Linux_x86_64.tar.gz
+          tar xf helm-docs_1.14.2_Linux_x86_64.tar.gz
           sudo cp helm-docs /usr/local/bin
           
           # Generate documentation
