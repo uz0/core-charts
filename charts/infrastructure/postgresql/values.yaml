@@ -1,10 +1,10 @@
 # PostgreSQL configuration with automatic database and user creation
 postgresql:
-  # Override image to use latest stable version
+  # Override image to use major version tag (more stable than latest)
   image:
     registry: docker.io
     repository: bitnami/postgresql
-    tag: latest
+    tag: "16"
 
   auth:
     # Password will be auto-generated if not set

@@ -2,11 +2,11 @@
 redis:
   architecture: standalone
 
-  # Override image to use latest stable
+  # Override image to use major version tag (more stable than latest)
   image:
     registry: docker.io
     repository: bitnami/redis
-    tag: latest
+    tag: "7.4"
 
   auth:
     enabled: true
