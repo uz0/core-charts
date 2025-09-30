@@ -1,3 +1,3 @@
 image:
-  tag: "fix-cicd-helm-deployment"
+  tag: "main-8bb958e"
   repository: "ghcr.io/uz0/core-pipeline"
