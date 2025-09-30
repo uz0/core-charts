@@ -1,0 +1,91 @@
+name: Sync ArgoCD Applications
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'argocd/**'
+      - 'argocd-apps/**'
+      - '.github/workflows/sync-argocd.yml'
+
+jobs:
+  sync-argocd:
+    name: Apply ArgoCD Manifests to Kubernetes
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v4
+        with:
+          version: 'latest'
+
+      - name: Configure kubectl
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_DATA }}
+        run: |
+          mkdir -p ~/.kube
+          echo "$KUBE_CONFIG" | base64 -d > ~/.kube/config
+          chmod 600 ~/.kube/config
+
+      - name: Test connection to cluster
+        run: |
+          kubectl cluster-info
+          kubectl get nodes
+
+      - name: Apply ArgoCD Applications
+        run: |
+          echo "📦 Applying ArgoCD applications..."
+
+          # Apply main applications file if it exists
+          if [ -f argocd/applications.yaml ]; then
+            echo "Applying argocd/applications.yaml..."
+            kubectl apply -f argocd/applications.yaml
+          fi
+
+          # Apply all individual app manifests
+          if [ -d argocd-apps ]; then
+            echo "Applying all manifests in argocd-apps/..."
+            for file in argocd-apps/*.yaml; do
+              if [ -f "$file" ]; then
+                echo "Applying $file..."
+                kubectl apply -f "$file"
+              fi
+            done
+          fi
+
+      - name: Verify ArgoCD Applications
+        run: |
+          echo "✅ Verifying ArgoCD applications..."
+          kubectl get applications -n argocd
+
+          # Check sync status for core-pipeline apps
+          echo ""
+          echo "🔄 Checking core-pipeline sync status..."
+          kubectl get application core-pipeline-dev -n argocd -o jsonpath='{.status.sync.status}' || echo "core-pipeline-dev not found"
+          echo ""
+          kubectl get application core-pipeline-prod -n argocd -o jsonpath='{.status.sync.status}' || echo "core-pipeline-prod not found"
+          echo ""
+
+      - name: Trigger ArgoCD Sync (optional)
+        run: |
+          # Optionally trigger immediate sync instead of waiting for auto-sync
+          echo "🚀 Triggering immediate sync for core-pipeline apps..."
+
+          # Install argocd CLI
+          curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+          chmod +x /usr/local/bin/argocd
+
+          # Login to ArgoCD (requires ARGOCD_SERVER and ARGOCD_AUTH_TOKEN secrets)
+          if [ ! -z "${{ secrets.ARGOCD_SERVER }}" ] && [ ! -z "${{ secrets.ARGOCD_AUTH_TOKEN }}" ]; then
+            argocd login ${{ secrets.ARGOCD_SERVER }} --auth-token ${{ secrets.ARGOCD_AUTH_TOKEN }} --grpc-web
+
+            # Sync applications
+            argocd app sync core-pipeline-dev || echo "Failed to sync core-pipeline-dev"
+            argocd app sync core-pipeline-prod || echo "Failed to sync core-pipeline-prod"
+          else
+            echo "⚠️ ArgoCD CLI sync skipped (ARGOCD_SERVER and ARGOCD_AUTH_TOKEN secrets not configured)"
+          fi
