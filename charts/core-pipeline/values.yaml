@@ -2,9 +2,9 @@
 replicaCount: 2
 
 image:
-  repository: ""  # Set via dev.tag.yaml or prod.tag.yaml
+  repository: "ghcr.io/uz0/core-pipeline"  # Override via dev.tag.yaml or prod.tag.yaml
   pullPolicy: IfNotPresent
-  tag: ""  # Set via dev.tag.yaml or prod.tag.yaml
+  tag: "latest"  # Override via dev.tag.yaml or prod.tag.yaml
 
 imagePullSecrets: []
 
