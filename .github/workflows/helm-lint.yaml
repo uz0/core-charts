@@ -184,6 +184,7 @@ jobs:
           # Create namespaces
           kubectl create namespace dev-core
           kubectl create namespace prod-core
-          
-          # Install charts
-          ct install --target-branch main --helm-extra-args "--timeout 10m"
+
+          echo "Installing charts..."
+          # Install charts with CI test values that use public images
+          ct install --target-branch main --helm-extra-args "--timeout=3m"

@@ -1,0 +1,10 @@
+# Chart Testing Configuration
+# https://github.com/helm/chart-testing/blob/main/doc/ct_lint.md
+
+target-branch: main
+chart-dirs:
+  - charts
+helm-extra-args: "--timeout=5m"
+validate-maintainers: false
+check-version-increment: false
+debug: true

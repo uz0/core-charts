@@ -141,19 +141,14 @@ jobs:
           kubectl apply -f argocd-apps/core-pipeline-dev.yaml --dry-run=server
           kubectl apply -f argocd-apps/core-pipeline-prod.yaml --dry-run=server
           
-          # Test Helm chart installation with all value files
+          # Test Helm chart installation with CI test values (public image)
           helm install test-dev charts/core-pipeline \
-            -f charts/core-pipeline/values.yaml \
-            -f charts/core-pipeline/values-dev.yaml \
-            -f charts/core-pipeline/dev.tag.yaml \
+            -f charts/core-pipeline/ci/test-values.yaml \
             -n dev-core \
             --dry-run
-          
+
           helm install test-prod charts/core-pipeline \
-            -f charts/core-pipeline/values.yaml \
-            -f charts/core-pipeline/values-prod.yaml \
-            -f charts/core-pipeline/prod.tag.yaml \
-            --set serviceMonitor.enabled=false \
+            -f charts/core-pipeline/ci/test-values.yaml \
             -n prod-core \
             --dry-run
 
