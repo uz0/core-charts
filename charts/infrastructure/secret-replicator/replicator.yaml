@@ -1,0 +1,87 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: secret-replicator
+  namespace: infrastructure
+spec:
+  template:
+    spec:
+      serviceAccountName: secret-replicator
+      containers:
+      - name: replicator
+        image: bitnami/kubectl:latest
+        command:
+        - /bin/bash
+        - -c
+        - |
+          echo "Starting secret replication..."
+
+          # Create namespaces if they don't exist
+          kubectl create namespace dev-core --dry-run=client -o yaml | kubectl apply -f -
+          kubectl create namespace prod-core --dry-run=client -o yaml | kubectl apply -f -
+
+          # Replicate PostgreSQL secrets to application namespaces
+          for ns in dev-core prod-core; do
+            echo "Replicating secrets to namespace: $ns"
+
+            # Copy PostgreSQL secrets from database namespace
+            kubectl get secret -n database postgres-core-pipeline-dev-secret -o yaml | \
+              sed "s/namespace: database/namespace: $ns/" | \
+              kubectl apply -f - || true
+
+            kubectl get secret -n database postgres-core-pipeline-prod-secret -o yaml | \
+              sed "s/namespace: database/namespace: $ns/" | \
+              kubectl apply -f - || true
+
+            # Copy Redis secrets from redis namespace
+            kubectl get secret -n redis redis-dev-secret -o yaml | \
+              sed "s/namespace: redis/namespace: $ns/" | \
+              kubectl apply -f - || true
+
+            kubectl get secret -n redis redis-prod-secret -o yaml | \
+              sed "s/namespace: redis/namespace: $ns/" | \
+              kubectl apply -f - || true
+
+            # Copy Kafka secrets from kafka namespace
+            kubectl get secret -n kafka kafka-dev-secret -o yaml | \
+              sed "s/namespace: kafka/namespace: $ns/" | \
+              kubectl apply -f - || true
+
+            kubectl get secret -n kafka kafka-prod-secret -o yaml | \
+              sed "s/namespace: kafka/namespace: $ns/" | \
+              kubectl apply -f - || true
+          done
+
+          echo "Secret replication completed"
+      restartPolicy: OnFailure
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: secret-replicator
+  namespace: infrastructure
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: secret-replicator
+rules:
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list", "create", "update", "patch"]
+- apiGroups: [""]
+  resources: ["namespaces"]
+  verbs: ["get", "list", "create"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: secret-replicator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: secret-replicator
+subjects:
+- kind: ServiceAccount
+  name: secret-replicator
+  namespace: infrastructure

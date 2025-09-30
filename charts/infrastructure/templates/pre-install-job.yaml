@@ -1,0 +1,116 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-secret-generator
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  template:
+    spec:
+      serviceAccountName: {{ .Release.Name }}-secret-generator
+      restartPolicy: Never
+      containers:
+      - name: generator
+        image: bitnami/kubectl:latest
+        command:
+        - /bin/bash
+        - -c
+        - |
+          set -e
+          echo "Generating passwords for infrastructure services..."
+
+          # Function to generate random password
+          generate_password() {
+            openssl rand -base64 24 | tr -d "=+/" | cut -c1-24
+          }
+
+          # Generate PostgreSQL passwords
+          {{- if .Values.postgresql.enabled }}
+          echo "Generating PostgreSQL passwords..."
+
+          POSTGRES_PASSWORD=$(generate_password)
+
+          # Create PostgreSQL admin secret
+          kubectl create secret generic postgresql-{{ .Release.Name }}-credentials \
+            --namespace={{ .Release.Namespace }} \
+            --from-literal=postgres-password=$POSTGRES_PASSWORD \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+          {{- range .Values.postgresqlSetup.databases }}
+          PASSWORD_{{ .name | upper | replace "-" "_" }}=$(generate_password)
+
+          # Create secret for each database
+          kubectl create secret generic postgres-{{ .name | replace "_" "-" }}-credentials \
+            --namespace={{ .Release.Namespace }} \
+            --from-literal=password=$PASSWORD_{{ .name | upper | replace "-" "_" }} \
+            --from-literal=username={{ .user }} \
+            --from-literal=database={{ .name }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+          {{- end }}
+          {{- end }}
+
+          # Generate Redis password
+          {{- if .Values.redis.enabled }}
+          echo "Generating Redis password..."
+          REDIS_PASSWORD=$(generate_password)
+
+          kubectl create secret generic redis-{{ .Release.Name }}-credentials \
+            --namespace={{ .Release.Namespace }} \
+            --from-literal=redis-password=$REDIS_PASSWORD \
+            --dry-run=client -o yaml | kubectl apply -f -
+          {{- end }}
+
+          # Generate Kafka credentials if needed
+          {{- if .Values.kafka.enabled }}
+          echo "Generating Kafka credentials..."
+          KAFKA_ADMIN_PASSWORD=$(generate_password)
+
+          kubectl create secret generic kafka-{{ .Release.Name }}-credentials \
+            --namespace={{ .Release.Namespace }} \
+            --from-literal=admin-password=$KAFKA_ADMIN_PASSWORD \
+            --dry-run=client -o yaml | kubectl apply -f -
+          {{- end }}
+
+          echo "Password generation completed"
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Release.Name }}-secret-generator
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "-10"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ .Release.Name }}-secret-generator
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "-10"
+rules:
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["create", "get", "update", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ .Release.Name }}-secret-generator
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "-10"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ .Release.Name }}-secret-generator
+subjects:
+- kind: ServiceAccount
+  name: {{ .Release.Name }}-secret-generator
+  namespace: {{ .Release.Namespace }}

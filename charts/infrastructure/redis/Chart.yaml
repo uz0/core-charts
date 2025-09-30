@@ -1,0 +1,10 @@
+apiVersion: v2
+name: redis-setup
+description: Redis deployment with automatic secret generation
+type: application
+version: 0.1.0
+appVersion: "7.0"
+dependencies:
+  - name: redis
+    version: 17.15.2
+    repository: https://charts.bitnami.com/bitnami

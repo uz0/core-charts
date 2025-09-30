@@ -51,6 +51,15 @@ spec:
                   name: {{ include "core-pipeline.fullname" $ }}-secret
                   key: {{ $key }}
             {{- end }}
+            {{- if .Values.externalSecrets }}
+            {{- range .Values.externalSecrets }}
+            - name: {{ .envName }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .secretName }}
+                  key: {{ .secretKey }}
+            {{- end }}
+            {{- end }}
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:

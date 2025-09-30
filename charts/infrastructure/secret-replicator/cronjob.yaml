@@ -1,0 +1,55 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: secret-sync
+  namespace: infrastructure
+spec:
+  schedule: "*/5 * * * *"  # Run every 5 minutes
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: secret-replicator
+          containers:
+          - name: sync
+            image: bitnami/kubectl:latest
+            command:
+            - /bin/bash
+            - -c
+            - |
+              echo "Syncing secrets across namespaces..."
+
+              # Target namespaces
+              NAMESPACES="dev-core prod-core"
+
+              for ns in $NAMESPACES; do
+                echo "Syncing to namespace: $ns"
+
+                # Ensure namespace exists
+                kubectl create namespace $ns --dry-run=client -o yaml | kubectl apply -f -
+
+                # Sync secrets based on namespace suffix
+                if [[ "$ns" == *"dev"* ]]; then
+                  ENV="dev"
+                elif [[ "$ns" == *"prod"* ]]; then
+                  ENV="prod"
+                fi
+
+                # Sync PostgreSQL secret
+                kubectl get secret -n database postgres-core-pipeline-${ENV}-secret -o yaml 2>/dev/null | \
+                  sed "s/namespace: database/namespace: $ns/" | \
+                  kubectl apply -f - || echo "PostgreSQL secret for $ENV not found"
+
+                # Sync Redis secret
+                kubectl get secret -n redis redis-${ENV}-secret -o yaml 2>/dev/null | \
+                  sed "s/namespace: redis/namespace: $ns/" | \
+                  kubectl apply -f - || echo "Redis secret for $ENV not found"
+
+                # Sync Kafka secret
+                kubectl get secret -n kafka kafka-${ENV}-secret -o yaml 2>/dev/null | \
+                  sed "s/namespace: kafka/namespace: $ns/" | \
+                  kubectl apply -f - || echo "Kafka secret for $ENV not found"
+              done
+
+              echo "Secret sync completed"
+          restartPolicy: OnFailure

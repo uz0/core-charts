@@ -1,0 +1,82 @@
+# CI Test Values - Override image to use public nginx for testing
+# This file is used by chart-testing tool during CI/CD
+
+image:
+  repository: nginx
+  tag: latest
+  pullPolicy: IfNotPresent
+
+# No image pull secrets needed for public nginx image
+imagePullSecrets: []
+
+# Minimal resource requirements for testing
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 100m
+    memory: 128Mi
+
+# Disable features not needed for basic chart testing
+autoscaling:
+  enabled: false
+
+persistence:
+  enabled: false
+
+networkPolicy:
+  enabled: false
+
+serviceMonitor:
+  enabled: false
+
+podDisruptionBudget:
+  enabled: false
+
+# Simple health checks for nginx
+livenessProbe:
+  httpGet:
+    path: /
+    port: 80
+  initialDelaySeconds: 10
+  periodSeconds: 10
+
+readinessProbe:
+  httpGet:
+    path: /
+    port: 80
+  initialDelaySeconds: 5
+  periodSeconds: 5
+
+startupProbe:
+  httpGet:
+    path: /
+    port: 80
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  failureThreshold: 10
+
+# Basic service configuration
+service:
+  port: 80
+  targetPort: 80
+
+# Minimal replica count for testing
+replicaCount: 1
+
+# Override security context for nginx to work in CI
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: false  # nginx needs write access to /var/cache/nginx
+  runAsNonRoot: false  # nginx needs to run as root to create directories
+  runAsUser: 0  # root user for nginx to work properly
+  allowPrivilegeEscalation: false
+
+# Also override pod security context
+podSecurityContext:
+  runAsNonRoot: false
+  runAsUser: 0
+  fsGroup: 0

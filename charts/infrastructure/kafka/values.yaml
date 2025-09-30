@@ -1,0 +1,60 @@
+# Kafka configuration with automatic topic creation
+kafka:
+  replicaCount: 3
+
+  persistence:
+    enabled: true
+    size: 20Gi
+    storageClass: "standard"
+
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"
+
+  zookeeper:
+    enabled: true
+    replicaCount: 3
+    persistence:
+      enabled: true
+      size: 8Gi
+
+  metrics:
+    kafka:
+      enabled: true
+    jmx:
+      enabled: true
+    serviceMonitor:
+      enabled: false
+
+  # Auto-create topics
+  provisioning:
+    enabled: true
+    topics:
+      - name: core-pipeline-events
+        partitions: 10
+        replicationFactor: 3
+        config:
+          retention.ms: "604800000"  # 7 days
+      - name: core-pipeline-commands
+        partitions: 5
+        replicationFactor: 3
+        config:
+          retention.ms: "604800000"
+      - name: core-pipeline-logs
+        partitions: 20
+        replicationFactor: 2
+        config:
+          retention.ms: "259200000"  # 3 days
+
+# Configuration for different environments
+environments:
+  - name: dev
+    clientId: core-pipeline-dev
+    consumerGroup: core-pipeline-dev-group
+  - name: prod
+    clientId: core-pipeline-prod
+    consumerGroup: core-pipeline-prod-group

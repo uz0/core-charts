@@ -1,0 +1,36 @@
+# Redis configuration with automatic password generation
+redis:
+  architecture: standalone
+
+  auth:
+    enabled: true
+    # Password will be auto-generated if not set
+    password: ""
+    existingSecret: ""
+    existingSecretPasswordKey: ""
+
+  master:
+    persistence:
+      enabled: true
+      size: 8Gi
+      storageClass: "standard"
+
+    resources:
+      requests:
+        memory: "128Mi"
+        cpu: "100m"
+      limits:
+        memory: "256Mi"
+        cpu: "250m"
+
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: false
+
+# Generate secrets for different environments
+environments:
+  - name: dev
+    namespace: dev-core
+  - name: prod
+    namespace: prod-core

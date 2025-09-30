@@ -1,0 +1,20 @@
+# Infrastructure Stack Configuration
+postgresql:
+  enabled: true
+
+postgresqlSetup:
+  databases:
+    - name: core_pipeline_dev
+      user: core_user
+    - name: core_pipeline_prod
+      user: core_user_prod
+
+redis:
+  enabled: true
+
+kafka:
+  enabled: true
+
+# Global namespace for infrastructure
+global:
+  namespace: infrastructure

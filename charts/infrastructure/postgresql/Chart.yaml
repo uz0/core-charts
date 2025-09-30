@@ -1,0 +1,10 @@
+apiVersion: v2
+name: postgresql-setup
+description: PostgreSQL deployment with automatic database and user creation
+type: application
+version: 0.1.0
+appVersion: "14.5"
+dependencies:
+  - name: postgresql
+    version: 12.12.10
+    repository: https://charts.bitnami.com/bitnami
