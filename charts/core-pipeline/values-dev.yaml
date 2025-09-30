@@ -108,8 +108,8 @@ secrets:
   DB_PASSWORD: core_password_dev
   # Legacy for backward compatibility
   POSTGRES_PASSWORD: core_password_dev
-  # Redis password (empty for dev)
-  REDIS_PASSWORD: ""
+  # Redis password - needs to be set from cluster secret
+  REDIS_PASSWORD: "REPLACE_WITH_ACTUAL_REDIS_PASSWORD"
 
 # GitHub Container Registry credentials
 # These should be provided via --set during helm install or via sealed-secrets

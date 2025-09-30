@@ -56,3 +56,13 @@ service:
 
 # Minimal replica count for testing
 replicaCount: 1
+
+# Override security context for nginx to work in CI
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: false  # nginx needs write access to /var/cache/nginx
+  runAsNonRoot: true
+  runAsUser: 101  # nginx user
+  allowPrivilegeEscalation: false
