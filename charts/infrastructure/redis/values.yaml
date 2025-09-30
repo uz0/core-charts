@@ -2,6 +2,12 @@
 redis:
   architecture: standalone
 
+  # Override image to use latest stable
+  image:
+    registry: docker.io
+    repository: bitnami/redis
+    tag: latest
+
   auth:
     enabled: true
     # Password will be auto-generated if not set
@@ -21,10 +27,17 @@ redis:
         memory: "256Mi"
         cpu: "250m"
 
+  # Completely disable metrics exporter
   metrics:
     enabled: false
-    serviceMonitor:
-      enabled: false
+
+  # Disable sentinel
+  sentinel:
+    enabled: false
+
+  # Disable replicas
+  replica:
+    replicaCount: 0
 
 # Generate secrets for different environments
 environments:

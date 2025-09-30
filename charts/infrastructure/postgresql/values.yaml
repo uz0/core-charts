@@ -4,7 +4,7 @@ postgresql:
   image:
     registry: docker.io
     repository: bitnami/postgresql
-    tag: 15.4.0-debian-11-r45
+    tag: latest
 
   auth:
     # Password will be auto-generated if not set
@@ -25,17 +25,21 @@ postgresql:
         memory: "512Mi"
         cpu: "500m"
 
-    # Init scripts mount from ConfigMap
+    # Disable init scripts (causing missing configmap error)
     initdb:
-      scriptsConfigMap: "{{ .Release.Name }}-postgresql-init"
+      scripts: {}
 
+  # Disable volume permissions init container
   volumePermissions:
     enabled: false
 
+  # Disable metrics exporter
   metrics:
     enabled: false
-    serviceMonitor:
-      enabled: false
+
+  # Disable shmVolume (requires volume)
+  shmVolume:
+    enabled: false
 
 # List of additional databases to create
 # Passwords will be auto-generated if not provided
