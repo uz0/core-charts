@@ -44,7 +44,7 @@ spec:
 
           # Create secret for each database
           kubectl create secret generic postgres-{{ .name | replace "_" "-" }}-credentials \
-            --namespace={{ .Release.Namespace }} \
+            --namespace={{ $.Release.Namespace }} \
             --from-literal=password=$PASSWORD_{{ .name | upper | replace "-" "_" }} \
             --from-literal=username={{ .user }} \
             --from-literal=database={{ .name }} \
