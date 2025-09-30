@@ -70,6 +70,35 @@ env:
   TRACING_ENABLED: "true"
 persistence:
   enabled: false
+
+# Override health checks for development
+livenessProbe:
+  httpGet:
+    path: /api/health
+    port: 3000
+  initialDelaySeconds: 60
+  periodSeconds: 30
+  timeoutSeconds: 10
+  failureThreshold: 5
+
+readinessProbe:
+  httpGet:
+    path: /api/health
+    port: 3000
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 5
+
+startupProbe:
+  httpGet:
+    path: /api/health
+    port: 3000
+  initialDelaySeconds: 15
+  periodSeconds: 10
+  timeoutSeconds: 10
+  failureThreshold: 30
+  successThreshold: 1
 networkPolicy:
   enabled: false
 serviceMonitor:
