@@ -200,7 +200,7 @@ jobs:
   release:
     name: Release Charts
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: false  # Disabled - using ArgoCD with direct Git sync, no need for GitHub releases
     needs: [yaml-lint, helm-lint, manifest-validation, security-scan]
     steps:
       - uses: actions/checkout@v4
