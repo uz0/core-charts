@@ -2,11 +2,12 @@
 redis:
   architecture: standalone
 
-  # Override image to use major version tag (more stable than latest)
+  # Use Bitnami Legacy registry (after Aug 2025 migration)
+  # Specific version tags moved to bitnamilegacy registry
   image:
     registry: docker.io
-    repository: bitnami/redis
-    tag: "7.4"
+    repository: bitnamilegacy/redis
+    tag: "7.4.0-debian-12-r4"
 
   auth:
     enabled: true
