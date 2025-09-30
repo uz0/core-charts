@@ -1,0 +1,22 @@
+apiVersion: v2
+name: infrastructure
+description: Complete infrastructure stack for core-pipeline
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+
+dependencies:
+  - name: postgresql-setup
+    version: 0.1.0
+    repository: "file://postgresql"
+    condition: postgresql.enabled
+
+  - name: redis-setup
+    version: 0.1.0
+    repository: "file://redis"
+    condition: redis.enabled
+
+  - name: kafka-setup
+    version: 0.1.0
+    repository: "file://kafka"
+    condition: kafka.enabled

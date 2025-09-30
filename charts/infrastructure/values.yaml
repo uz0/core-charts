@@ -1,0 +1,13 @@
+# Infrastructure Stack Configuration
+postgresql:
+  enabled: true
+
+redis:
+  enabled: true
+
+kafka:
+  enabled: true
+
+# Global namespace for infrastructure
+global:
+  namespace: infrastructure
