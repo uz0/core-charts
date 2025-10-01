@@ -56,7 +56,7 @@ env:
   DB_HOST: postgresql.database.svc.cluster.local
   DB_PORT: "5432"
   DB_USERNAME: core_user
-  DB_DATABASE: core_pipeline
+  DB_DATABASE: core_pipeline_prod
   DB_LOGGING: "false"
 
   # Redis
@@ -73,7 +73,7 @@ env:
   KAFKA_GROUP_ID: core-pipeline-prod-group
   POSTGRES_HOST: postgresql.database.svc.cluster.local
   POSTGRES_PORT: "5432"
-  POSTGRES_DB: core_pipeline
+  POSTGRES_DB: core_pipeline_prod
   POSTGRES_USER: core_user
 
   # Observability
@@ -122,13 +122,8 @@ startupProbe:
   failureThreshold: 30
   successThreshold: 1
 
-secrets:
-  # Database password
-  DB_PASSWORD: core_password_prod
-  # Legacy for backward compatibility
-  POSTGRES_PASSWORD: core_password_prod
-  # Redis password (empty for now, should be set in production)
-  REDIS_PASSWORD: ""
+# All secrets (DB_PASSWORD, REDIS_PASSWORD, etc.) are injected via envFrom: all-credentials
+# DO NOT define them here as it will override the all-credentials secret
 
 # GitHub Container Registry credentials
 # These should be provided via --set during helm install or via sealed-secrets

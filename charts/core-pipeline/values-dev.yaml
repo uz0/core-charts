@@ -109,13 +109,9 @@ networkPolicy:
   enabled: false
 serviceMonitor:
   enabled: false
-secrets:
-  # Database password
-  DB_PASSWORD: core_password_dev
-  # Legacy for backward compatibility
-  POSTGRES_PASSWORD: core_password_dev
-  # Redis password - needs to be set from cluster secret
-  REDIS_PASSWORD: "REPLACE_WITH_ACTUAL_REDIS_PASSWORD"
+
+# All secrets (DB_PASSWORD, REDIS_PASSWORD, etc.) are injected via envFrom: all-credentials
+# DO NOT define them here as it will override the all-credentials secret
 
 # GitHub Container Registry credentials
 # These should be provided via --set during helm install or via sealed-secrets
