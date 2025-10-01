@@ -26,10 +26,6 @@ postgresql:
         memory: "512Mi"
         cpu: "500m"
 
-    # Enable init scripts to create databases and users
-    initdb:
-      scriptsConfigMap: "postgresql-postgresql-init"
-
   # Disable volume permissions init container
   volumePermissions:
     enabled: false
@@ -49,5 +45,5 @@ databases:
     user: core_user
     # Password will be generated automatically
   - name: core_pipeline_prod
-    user: core_user_prod
+    user: core_user
     # Password will be generated automatically
