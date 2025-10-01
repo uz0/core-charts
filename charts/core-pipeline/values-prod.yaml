@@ -24,10 +24,11 @@ ingress:
       paths:
         - path: /
           pathType: Prefix
-  tls:
-    - secretName: core-pipeline-prod-tls
-      hosts:
-        - core-pipeline.theedgestory.org
+  # TLS temporarily disabled to allow cert-manager HTTP-01 challenges
+  # tls:
+  #   - secretName: core-pipeline-prod-tls
+  #     hosts:
+  #       - core-pipeline.theedgestory.org
 
 resources:
   requests:
