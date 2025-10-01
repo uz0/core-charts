@@ -39,11 +39,10 @@ service:
 
 ingress:
   enabled: false
-  className: nginx
+  className: traefik
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/ssl-protocols: "TLSv1.2 TLSv1.3"
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
   hosts:
     - host: core-pipeline.example.com
       paths:
