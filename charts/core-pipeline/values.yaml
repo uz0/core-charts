@@ -141,13 +141,8 @@ env:
   OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo.monitoring:4318
   SERVICE_VERSION: "1.0.0"
 
-secrets:
-  # Database password
-  DB_PASSWORD: core_password
-  # Legacy for backward compatibility
-  POSTGRES_PASSWORD: core_password
-  # Redis password
-  REDIS_PASSWORD: ""
+# All secrets (DB_PASSWORD, REDIS_PASSWORD, etc.) are injected via envFrom: all-credentials
+# DO NOT define 'secrets:' here as it will create a separate secret that overrides all-credentials
 
 configMap:
   enabled: true
