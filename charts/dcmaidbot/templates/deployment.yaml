@@ -46,13 +46,30 @@ spec:
             secretKeyRef:
               name: dcmaidbot-secrets
               key: admin-ids
-              key: admin-daniil-id
         - name: DATABASE_URL
           valueFrom:
             secretKeyRef:
               name: dcmaidbot-secrets
               key: database-url
         - name: OPENAI_API_KEY
+        - name: WEBHOOK_MODE
+          valueFrom:
+            secretKeyRef:
+              name: dcmaidbot-secrets
+              key: webhook-mode
+              optional: true
+        - name: WEBHOOK_URL
+          valueFrom:
+            secretKeyRef:
+              name: dcmaidbot-secrets
+              key: webhook-url
+              optional: true
+        - name: WEBHOOK_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: dcmaidbot-secrets
+              key: webhook-secret
+              optional: true
           valueFrom:
             secretKeyRef:
               name: dcmaidbot-secrets
