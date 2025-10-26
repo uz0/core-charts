@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "dcmaidbot.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: dcmaidbot
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: dcmaidbot
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: dcmaidbot
+        release: {{ .Release.Name }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: dcmaidbot
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+        - name: BOT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: dcmaidbot-secrets
+              key: bot-token
+        - name: ADMIN_VASILISA_ID
+          valueFrom:
+            secretKeyRef:
+              name: dcmaidbot-secrets
+              key: admin-vasilisa-id
+        - name: ADMIN_DANIIL_ID
+          valueFrom:
+            secretKeyRef:
+              name: dcmaidbot-secrets
+              key: admin-daniil-id
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: dcmaidbot-secrets
+              key: database-url
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: dcmaidbot-secrets
+              key: openai-api-key
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -1,0 +1,30 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/dcversus/dcmaidbot
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+env:
+  # These will be overridden by secrets
+  BOT_TOKEN: ""
+  ADMIN_VASILISA_ID: ""
+  ADMIN_DANIIL_ID: ""
+  DATABASE_URL: ""
+  OPENAI_API_KEY: ""
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
