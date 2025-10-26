@@ -42,3 +42,20 @@ resources:
 nodeSelector: {}
 tolerations: []
 affinity: {}
+
+# Webhook configuration
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  hosts:
+    - host: dcmaidbot.theedgestory.org
+      paths:
+        - path: /webhook
+          pathType: Prefix
+  tls:
+    - secretName: dcmaidbot-tls
+      hosts:
+        - dcmaidbot.theedgestory.org
