@@ -9,13 +9,27 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
-env:
-  # These will be overridden by secrets
-  BOT_TOKEN: ""
-  ADMIN_VASILISA_ID: ""
-  ADMIN_DANIIL_ID: ""
-  DATABASE_URL: ""
-  OPENAI_API_KEY: ""
+# Environment variables (all sourced from dcmaidbot-secrets in deployment):
+# - BOT_TOKEN: Telegram bot API token
+# - ADMIN_VASILISA_ID: Vasilisa's Telegram user ID
+# - ADMIN_DANIIL_ID: Daniil's Telegram user ID
+# - DATABASE_URL: PostgreSQL connection string
+# - OPENAI_API_KEY: OpenAI API key for LLM/RAG
+
+# Health check probes (optional, for PRP-011 status page)
+livenessProbe: {}
+  # httpGet:
+  #   path: /health
+  #   port: 8080
+  # initialDelaySeconds: 30
+  # periodSeconds: 10
+
+readinessProbe: {}
+  # httpGet:
+  #   path: /ready
+  #   port: 8080
+  # initialDelaySeconds: 5
+  # periodSeconds: 5
 
 resources:
   limits:
