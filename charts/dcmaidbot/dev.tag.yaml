@@ -1,2 +1,5 @@
 image:
   tag: "latest"
+
+ingress:
+  enabled: false  # Dev environment doesn't need external ingress
