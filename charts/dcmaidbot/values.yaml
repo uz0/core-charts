@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: ghcr.io/dcversus/dcmaidbot
-  pullPolicy: IfNotPresent
+  pullPolicy: Always  # Ensure latest image is always pulled
   tag: "latest"
 
 imagePullSecrets: []
@@ -48,14 +48,14 @@ ingress:
   enabled: true
   className: nginx
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-prod
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    # Cloudflare Tunnel handles TLS termination, nginx should accept HTTP
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
   hosts:
     - host: dcmaidbot.theedgestory.org
       paths:
         - path: /webhook
           pathType: Prefix
   tls:
-    - secretName: dcmaidbot-tls
+    - secretName: cloudflare-origin-tls  # Using Cloudflare Origin Certificate
       hosts:
         - dcmaidbot.theedgestory.org
