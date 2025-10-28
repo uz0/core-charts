@@ -53,7 +53,7 @@ ingress:
   hosts:
     - host: dcmaidbot.theedgestory.org
       paths:
-        - path: /webhook
+        - path: /
           pathType: Prefix
   tls:
     - secretName: cloudflare-origin-tls  # Using Cloudflare Origin Certificate
