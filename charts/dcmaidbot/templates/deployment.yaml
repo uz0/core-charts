@@ -70,10 +70,11 @@ spec:
               name: dcmaidbot-secrets
               key: webhook-secret
               optional: true
+        - name: NUDGE_SECRET
           valueFrom:
             secretKeyRef:
-              name: dcmaidbot-secrets
-              key: openai-api-key
+              name: dcmaidbot-nudge-secret
+              key: NUDGE_SECRET
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
       {{- with .Values.nodeSelector }}
