@@ -1,0 +1,23 @@
+# PostgreSQL initialization for production environment
+
+postgresql:
+  host: postgresql.infrastructure.svc.cluster.local
+  port: 5432
+  adminUser: postgres
+  adminPassword: ""  # Set from secret
+  secretName: "postgresql-admin"
+  secretKey: "password"
+
+databases:
+  - name: core_dev
+    user: core_dev_user
+    password: ""  # Set via external-secrets
+  - name: core_prod
+    user: core_prod_user
+    password: ""  # Set via external-secrets
+  - name: authentik
+    user: authentik_user
+    password: ""  # Set via external-secrets
+  - name: dcmaidbot
+    user: dcmaidbot_user
+    password: ""  # Set via external-secrets

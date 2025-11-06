@@ -1,0 +1,56 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "postgresql-init.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "postgresql-init.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  backoffLimit: {{ .Values.job.backoffLimit }}
+  ttlSecondsAfterFinished: {{ .Values.job.ttlSecondsAfterFinished }}
+  template:
+    metadata:
+      labels:
+        {{- include "postgresql-init.selectorLabels" . | nindent 8 }}
+    spec:
+      restartPolicy: OnFailure
+      securityContext:
+        {{- toYaml .Values.job.securityContext | nindent 8 }}
+      containers:
+      - name: init
+        image: "{{ .Values.job.image.repository }}:{{ .Values.job.image.tag }}"
+        imagePullPolicy: {{ .Values.job.image.pullPolicy }}
+        command: ["/bin/bash", "/scripts/init.sh"]
+        env:
+          - name: PGHOST
+            value: {{ .Values.postgresql.host | quote }}
+          - name: PGPORT
+            value: {{ .Values.postgresql.port | quote }}
+          - name: PGUSER
+            value: {{ .Values.postgresql.adminUser | quote }}
+          - name: PGPASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ required "postgresql.secretName is required" .Values.postgresql.secretName }}
+                key: {{ required "postgresql.secretKey is required" .Values.postgresql.secretKey }}
+        resources:
+          {{- toYaml .Values.job.resources | nindent 10 }}
+        volumeMounts:
+          - name: scripts
+            mountPath: /scripts
+            readOnly: true
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          readOnlyRootFilesystem: true
+      volumes:
+        - name: scripts
+          configMap:
+            name: {{ include "postgresql-init.fullname" . }}
+            defaultMode: 0555

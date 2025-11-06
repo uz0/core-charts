@@ -1,0 +1,86 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "dcmaidbot.fullname" . }}-migrate
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: dcmaidbot
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    release: {{ .Release.Name }}
+    component: migration
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app: dcmaidbot
+        release: {{ .Release.Name }}
+        component: migration
+    spec:
+      restartPolicy: Never
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: migrate
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command:
+          - /bin/sh
+          - -c
+          - |
+            echo "==================================="
+            echo "Running database migrations..."
+            echo "==================================="
+            alembic upgrade head
+            echo "==================================="
+            echo "Migrations completed successfully!"
+            echo "==================================="
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "dcmaidbot.fullname" . }}-secrets
+              key: database-url
+        - name: DB_HOST
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "dcmaidbot.fullname" . }}-secrets
+              key: db-host
+              optional: true
+        - name: DB_PORT
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "dcmaidbot.fullname" . }}-secrets
+              key: db-port
+              optional: true
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "dcmaidbot.fullname" . }}-secrets
+              key: db-name
+              optional: true
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "dcmaidbot.fullname" . }}-secrets
+              key: db-user
+              optional: true
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "dcmaidbot.fullname" . }}-secrets
+              key: db-password
+              optional: true
+        resources:
+          requests:
+            memory: 128Mi
+            cpu: 100m
+          limits:
+            memory: 256Mi
+            cpu: 250m

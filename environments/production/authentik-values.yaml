@@ -1,0 +1,66 @@
+# Authentik configuration for production environment
+
+authentik:
+  global:
+    env:
+      # Production domain settings
+      - name: AUTHENTIK_COOKIE_DOMAIN
+        value: ".theedgestory.org"
+      - name: AUTHENTIK_HOST
+        value: "https://auth.theedgestory.org"
+      - name: AUTHENTIK_SERVER
+        value: "https://auth.theedgestory.org"
+      - name: AUTHENTIK_CSRF_TRUSTED_ORIGINS
+        value: "https://auth.theedgestory.org,https://*.theedgestory.org"
+      - name: AUTHENTIK_CSRF_COOKIE_SECURE
+        value: "true"
+      # PostgreSQL connection
+      - name: AUTHENTIK_POSTGRESQL__HOST
+        value: "postgresql.infrastructure.svc.cluster.local"
+      - name: AUTHENTIK_POSTGRESQL__PORT
+        value: "5432"
+      - name: AUTHENTIK_POSTGRESQL__NAME
+        value: "authentik"
+      - name: AUTHENTIK_POSTGRESQL__USER
+        value: "authentik_user"
+      - name: AUTHENTIK_POSTGRESQL__PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: authentik-postgresql
+            key: password
+      # Redis connection
+      - name: AUTHENTIK_REDIS__HOST
+        value: "redis-master.infrastructure.svc.cluster.local"
+      - name: AUTHENTIK_REDIS__PORT
+        value: "6379"
+      - name: AUTHENTIK_REDIS__PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: authentik-redis
+            key: password
+
+  server:
+    replicas: 2  # High availability
+    ingress:
+      enabled: true
+      ingressClassName: nginx
+      annotations:
+        cert-manager.io/cluster-issuer: "letsencrypt-prod"
+        nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+      hosts:
+        - host: auth.theedgestory.org
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - secretName: authentik-tls
+          hosts:
+            - auth.theedgestory.org
+
+  worker:
+    replicas: 2  # High availability
+
+  bootstrap:
+    enabled: true
+    email: "dcversus@gmail.com"
+    password: ""  # Set via sealed-secrets or external-secrets

@@ -1,0 +1,26 @@
+# PostgreSQL configuration for production environment
+
+auth:
+  username: postgres
+  password: ""  # Set via secrets or external-secrets
+  database: postgres
+  existingSecret: "postgresql-admin"  # Create this secret separately (see docs/postgresql-secret.md)
+
+primary:
+  resources:
+    requests:
+      memory: 1Gi
+      cpu: 500m
+    limits:
+      memory: 2Gi
+      cpu: 1000m
+
+  persistence:
+    enabled: true
+    size: 20Gi
+    storageClass: "standard"
+
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true

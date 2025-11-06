@@ -1,0 +1,23 @@
+# PostgreSQL configuration for local environment
+
+auth:
+  username: postgres
+  password: ""
+  database: postgres
+
+primary:
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 250m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+
+  persistence:
+    enabled: true
+    size: 5Gi
+    storageClass: "microk8s-hostpath"
+
+metrics:
+  enabled: false  # Disable metrics for local

@@ -9,12 +9,34 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
-# Environment variables (all sourced from dcmaidbot-secrets in deployment):
-# - BOT_TOKEN: Telegram bot API token
-# - ADMIN_IDS: Comma-separated admin Telegram user IDs (supports unlimited admins)
-# - 
-# - DATABASE_URL: PostgreSQL connection string
-# - OPENAI_API_KEY: OpenAI API key for LLM/RAG
+# REQUIRED: Telegram Bot Configuration
+botToken: "YOUR_BOT_TOKEN_FROM_BOTFATHER"  # Get from @BotFather
+adminIds: "123456789"  # Comma-separated Telegram user IDs
+
+# Database connection (auto-generates DATABASE_URL)
+database:
+  host: "postgresql.infrastructure.svc.cluster.local"
+  port: "5432"
+  name: "dcmaidbot"
+  user: "dcmaidbot_user"
+  password: "changeme"  # Override with actual password from postgresql-init
+
+# Redis connection (auto-generates REDIS_URL)
+redis:
+  host: "redis-master.infrastructure.svc.cluster.local"
+  port: "6379"
+  password: "changeme"  # Override with actual Redis password
+
+# Optional: OpenAI API Key
+openaiApiKey: ""  # Leave empty to use placeholder
+
+# Optional: Webhook configuration
+webhookMode: "false"  # Set to "true" for webhook mode
+webhookUrl: ""  # Required if webhookMode is "true"
+webhookSecret: ""  # Optional webhook secret
+
+# Optional: NUDGE_SECRET for agent communication
+nudgeSecret: ""  # Auto-generated if not provided
 
 # Health check probes (optional, for PRP-011 status page)
 livenessProbe: {}

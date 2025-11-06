@@ -1,0 +1,40 @@
+# Core Pipeline - Production environment overrides for local cluster
+
+image:
+  repository: ghcr.io/yourusername/core-pipeline
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+replicaCount: 1  # Single replica for local
+
+env:
+  - name: NODE_ENV
+    value: "production"
+  - name: DATABASE_URL
+    value: ""
+  - name: REDIS_URL
+    value: ""
+  - name: KAFKA_BROKERS
+    value: "kafka-cluster-kafka-bootstrap.infrastructure.svc.cluster.local:9092"
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations: {}
+  hosts:
+    - host: api.local.test
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []  # No TLS for local
+
+resources:
+  requests:
+    memory: 256Mi
+    cpu: 250m
+  limits:
+    memory: 512Mi
+    cpu: 500m
+
+autoscaling:
+  enabled: false

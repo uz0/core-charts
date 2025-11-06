@@ -1,0 +1,283 @@
+# Helmfile - Modern declarative Kubernetes deployment
+# Replaces all bash scripts with proper tooling
+#
+# Usage:
+#   helmfile sync                    # Deploy everything
+#   helmfile -e local sync           # Deploy to local (MicroK8s)
+#   helmfile -e production sync      # Deploy to production
+#   helmfile apply                   # Apply with diff
+#   helmfile destroy                 # Remove everything
+
+# Helm repositories
+repositories:
+  # Bitnami for PostgreSQL, Redis, Kafka
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+
+  # Authentik SSO
+  - name: authentik
+    url: https://charts.goauthentik.io
+
+  # Jetstack for cert-manager
+  - name: jetstack
+    url: https://charts.jetstack.io
+
+  # Ingress NGINX
+  - name: ingress-nginx
+    url: https://kubernetes.github.io/ingress-nginx
+
+  # Prometheus community
+  - name: prometheus-community
+    url: https://prometheus-community.github.io/helm-charts
+
+  # Grafana
+  - name: grafana
+    url: https://grafana.github.io/helm-charts
+
+  # MinIO
+  - name: minio-operator
+    url: https://operator.min.io/
+
+  # ArgoCD
+  - name: argo
+    url: https://argoproj.github.io/argo-helm
+
+# Default values for all environments
+helmDefaults:
+  createNamespace: true
+  wait: true
+  timeout: 600
+  cleanupOnFail: true
+  atomic: true
+  force: false
+  recreatePods: false
+
+# Environment-specific configurations
+environments:
+  local:
+    values:
+      - environments/local/values.yaml
+      - environments/local/secrets/values.yaml
+  production:
+    values:
+      - environments/production/values.yaml
+      - environments/production/secrets/values.yaml
+
+---
+
+# Release definitions - deployment order matters (dependencies)
+releases:
+  #############################################################################
+  # INFRASTRUCTURE LAYER 0 - Core Platform Components
+  #############################################################################
+
+  # cert-manager - TLS certificate automation
+  - name: cert-manager
+    namespace: cert-manager
+    chart: jetstack/cert-manager
+    version: 1.16.2
+    condition: certManager.enabled
+    values:
+      - installCRDs: true
+      - crds:
+          enabled: true
+      - global:
+          leaderElection:
+            namespace: cert-manager
+    labels:
+      layer: infrastructure
+      component: certificates
+
+  # ingress-nginx - Kubernetes ingress controller
+  - name: ingress-nginx
+    namespace: ingress-nginx
+    chart: ingress-nginx/ingress-nginx
+    version: 4.11.3
+    condition: ingressNginx.enabled
+    values:
+      - environments/{{ .Environment.Name }}/ingress-values.yaml
+    labels:
+      layer: infrastructure
+      component: ingress
+
+  #############################################################################
+  # INFRASTRUCTURE LAYER 1 - Databases & Storage
+  #############################################################################
+
+  # PostgreSQL - Shared database for all applications
+  - name: postgresql
+    namespace: infrastructure
+    chart: bitnami/postgresql
+    version: 18.1.3
+    condition: postgresql.enabled
+    values:
+      - environments/{{ .Environment.Name }}/postgresql-values.yaml
+      - environments/{{ .Environment.Name }}/secrets/postgresql-values.yaml.gotmpl
+    labels:
+      layer: infrastructure
+      component: database
+
+  # PostgreSQL Init - Database initialization job
+  - name: postgresql-init
+    namespace: infrastructure
+    chart: ./charts/postgresql-init
+    condition: postgresql.enabled
+    needs:
+      - infrastructure/postgresql
+    values:
+      - environments/{{ .Environment.Name }}/postgresql-init-values.yaml
+      - environments/{{ .Environment.Name }}/secrets/postgresql-init-values.yaml.gotmpl
+    labels:
+      layer: infrastructure
+      component: database-init
+
+  # Redis - Shared cache/session store
+  - name: redis
+    namespace: infrastructure
+    chart: bitnami/redis
+    version: 23.2.2
+    condition: redis.enabled
+    values:
+      - environments/{{ .Environment.Name }}/redis-values.yaml
+      - environments/{{ .Environment.Name }}/secrets/redis-values.yaml.gotmpl
+    labels:
+      layer: infrastructure
+      component: cache
+
+  # MinIO Operator - S3-compatible object storage
+  - name: minio-operator
+    namespace: minio-operator
+    chart: minio-operator/operator
+    version: 6.0.4
+    condition: minio.enabled
+    labels:
+      layer: infrastructure
+      component: storage
+
+  #############################################################################
+  # INFRASTRUCTURE LAYER 2 - Observability
+  #############################################################################
+
+  # Prometheus Stack - Metrics collection + Grafana
+  - name: kube-prometheus-stack
+    namespace: monitoring
+    chart: prometheus-community/kube-prometheus-stack
+    version: 67.6.1
+    condition: monitoring.enabled
+    needs:
+      - ingress-nginx/ingress-nginx
+    values:
+      - environments/{{ .Environment.Name }}/monitoring-values.yaml
+    labels:
+      layer: monitoring
+      component: metrics
+
+  # Loki Stack - Log aggregation
+  - name: loki
+    namespace: monitoring
+    chart: grafana/loki-stack
+    version: 2.10.2
+    condition: monitoring.enabled
+    values:
+      - environments/{{ .Environment.Name }}/loki-values.yaml
+    labels:
+      layer: monitoring
+      component: logs
+
+  #############################################################################
+  # INFRASTRUCTURE LAYER 3 - Authentication
+  #############################################################################
+
+  # Authentik - SSO and identity provider
+  - name: authentik
+    namespace: authentik
+    chart: authentik/authentik
+    version: 2024.12.1
+    condition: authentik.enabled
+    needs:
+      - infrastructure/postgresql
+      - infrastructure/redis
+      - ingress-nginx/ingress-nginx
+    values:
+      - environments/{{ .Environment.Name }}/authentik-values.yaml
+      - environments/{{ .Environment.Name }}/secrets/authentik-values.yaml.gotmpl
+    labels:
+      layer: authentication
+      component: sso
+
+  #############################################################################
+  # APPLICATION LAYER - Business Applications
+  #############################################################################
+
+  # Core Pipeline - Production
+  - name: core-pipeline-prod
+    namespace: core-pipeline-prod
+    chart: ./charts/core-pipeline
+    condition: applications.corePipeline.prod.enabled
+    needs:
+      - infrastructure/postgresql-init
+      - infrastructure/redis
+      - authentik/authentik
+    values:
+      - charts/core-pipeline/values.yaml
+      - charts/core-pipeline/values.prod.yml
+      - environments/{{ .Environment.Name }}/core-pipeline-prod-values.yaml
+      - environments/{{ .Environment.Name }}/secrets/core-pipeline-prod-values.yaml.gotmpl
+    labels:
+      layer: application
+      environment: production
+      component: api
+
+  # Core Pipeline - Development
+  - name: core-pipeline-dev
+    namespace: core-pipeline-dev
+    chart: ./charts/core-pipeline
+    condition: applications.corePipeline.dev.enabled
+    needs:
+      - infrastructure/postgresql-init
+      - infrastructure/redis
+      - authentik/authentik
+    values:
+      - charts/core-pipeline/values.yaml
+      - charts/core-pipeline/values.dev.yml
+      - environments/{{ .Environment.Name }}/core-pipeline-dev-values.yaml
+      - environments/{{ .Environment.Name }}/secrets/core-pipeline-dev-values.yaml.gotmpl
+    labels:
+      layer: application
+      environment: development
+      component: api
+
+  # DCMaidBot - Telegram bot
+  - name: dcmaidbot
+    namespace: dcmaidbot
+    chart: ./charts/dcmaidbot
+    condition: applications.dcmaidbot.enabled
+    needs:
+      - infrastructure/postgresql-init
+      - infrastructure/redis
+    values:
+      - charts/dcmaidbot/values.yaml
+      - environments/{{ .Environment.Name }}/dcmaidbot-values.yaml
+      - environments/{{ .Environment.Name }}/secrets/dcmaidbot-values.yaml.gotmpl
+    labels:
+      layer: application
+      component: bot
+
+  #############################################################################
+  # GITOPS LAYER - Deployment Automation (Optional)
+  #############################################################################
+
+  # ArgoCD - GitOps continuous deployment
+  - name: argocd
+    namespace: argocd
+    chart: argo/argo-cd
+    version: 7.7.11
+    condition: argocd.enabled
+    needs:
+      - authentik/authentik
+      - ingress-nginx/ingress-nginx
+    values:
+      - environments/{{ .Environment.Name }}/argocd-values.yaml
+    labels:
+      layer: gitops
+      component: cd

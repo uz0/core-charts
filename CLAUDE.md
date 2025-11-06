@@ -6,72 +6,223 @@ Instructions for Claude Code when working with this repository.
 
 ### File Management
 - ✅ **ALLOWED**: Only `CLAUDE.md` and `README.md` in root
-- ❌ **FORBIDDEN**: Any other files in root directory
-- ✅ **Scripts**: Only in `scripts/` directory
-- ✅ **Config**: Only in designated directories
+- ❌ **FORBIDDEN**: Any other documentation files in root (use docs/ if needed)
+- ✅ **Charts**: Only in `charts/` directory
+- ✅ **Config**: Only in `environments/` directory
 
 ### Production Standards
-1. All services must use Authentik SSO
-2. Access restricted to admin email only
-3. No hardcoded secrets
-4. GitOps only - changes via Git
-5. Test with `./scripts/healthcheck.sh`
+1. **No bash scripts** - Use Helm/Helmfile only
+2. **No hardcoded secrets** - Use environment-specific values files
+3. **Service discovery** - No hardcoded IPs, use Kubernetes DNS
+4. **Modern tooling** - Helm 3, Helmfile, Kustomize
+5. **GitOps ready** - Declarative configurations
 
 ## Current State
 
-### ✅ Production Ready
+### ✅ Modern Kubernetes Infrastructure
+
+**Deployment Method:**
+- Pure Helm 3 deployments
+- Environment-specific values (local/production)
+- No bash scripts or custom tooling needed
 
 **Infrastructure:**
-- K3s + ArgoCD + Authentik SSO
-- PostgreSQL, Redis, Kafka (shared)
-- All services authenticated
+- **MicroK8s**: Local development cluster
+- **PostgreSQL**: Shared database (Bitnami chart)
+- **Redis**: Shared cache (Bitnami chart)
+- **Authentik**: SSO authentication (Official chart)
+- **Ingress-NGINX**: Traffic routing
+- **MetalLB**: LoadBalancer support
 
-**Authentication:**
-- Authentik: https://auth.theedgestory.org
-- Google OAuth configured
-- Access policy: dcversus@gmail.com only
-- All services integrated
+**Cluster Info:**
+- **Server**: `kubectl config view -o jsonpath='{.clusters[0].cluster.server}'`
+- **LoadBalancer IP**: `kubectl get svc -n ingress-nginx ingress-nginx -o jsonpath='{.status.loadBalancer.ingress[0].ip}'`
+- **Storage Class**: microk8s-hostpath
 
 ## Key Information
 
-### Authentik Credentials
-- Admin: akadmin / Admin123!
-- Database password: WNAkt8ZouZRhvlcf3HSAxFXQfbt4qszs
-- No ArgoCD management (prevents password conflicts)
+### Access
+- **Authentik**: [http://auth.local.test](http://auth.local.test)
+- **Admin User**: `akadmin`
+- **Access Method**: Recovery key (see ACCESS.md)
 
-### Scripts
-- `setup.sh` - Complete setup
-- `deploy.sh` - Apply changes
-- `healthcheck.sh` - Verify health
-- `configure-authentik-apps.sh` - OAuth setup
+### Databases Created
+All databases initialized via postgresql-init Job:
+- `core_dev` - User: `core_dev_user`
+- `core_prod` - User: `core_prod_user`
+- `authentik` - User: `authentik_user`
+- `dcmaidbot` - User: `dcmaidbot_user`
 
-### Common Tasks
+Passwords are in `environments/local/*.values.yaml`
 
-Deploy changes:
-```bash
-git push origin main  # Auto-sync
-./scripts/deploy.sh   # Manual
+### Repository Structure
+
+```
+core-charts/
+├── environments/
+│   ├── local/              # Local/MicroK8s configuration
+│   │   ├── values.yaml
+│   │   ├── authentik-values.yaml
+│   │   ├── postgresql-values.yaml
+│   │   ├── postgresql-init-values.yaml
+│   │   ├── redis-values.yaml
+│   │   └── ingress-values.yaml
+│   └── production/         # Production configuration
+│       └── [same structure]
+├── charts/
+│   ├── postgresql-init/    # DB initialization Job
+│   ├── core-pipeline/      # Application chart
+│   └── dcmaidbot/          # Bot application
+├── helmfile.yaml           # Declarative multi-chart deployment
+├── CLAUDE.md              # This file
+├── README.md              # Brief overview
+└── docs/                  # All documentation
+    ├── README.md          # Complete guide
+    ├── HELMFILE.md        # Helmfile usage guide
+    ├── ACCESS.md          # Access credentials
+    └── STRUCTURE.md       # Repository structure
+
+**OLD REMOVED:**
+- ❌ scripts/ - All bash scripts removed
+- ❌ argocd-apps/ - Not needed for direct deployment
+- ❌ config/ - Moved to environments/
+- ❌ k8s/ - Raw manifests not needed
+- ❌ Makefile - Use helmfile instead
 ```
 
-Check status:
+## Common Tasks
+
+See [docs/HELMFILE.md](docs/HELMFILE.md) for complete Helmfile guide.
+
+### Deploy Everything (Local)
 ```bash
-./scripts/healthcheck.sh
+# Deploy all services (one command)
+helmfile.exe -e local sync
+
+# Or deploy only enabled services (interactive, shows changes)
+helmfile.exe -e local apply
+
+# List all releases and their status
+helmfile.exe -e local list
+
+# Deploy specific layer
+helmfile.exe -e local -l layer=infrastructure sync
+helmfile.exe -e local -l layer=application sync
+```
+
+### Check Status
+```bash
+# All pods
 kubectl get pods -A
+
+# Specific service
+kubectl get pods -n authentik $(kubectl get pod -n authentik -l app.kubernetes.io/name=authentik-server -o name | head -1)
+kubectl logs -n authentik $(kubectl get pod -n authentik -l app.kubernetes.io/name=authentik-server -o name | head -1)
+
+# Ingress
+kubectl get ingress -A
 ```
+
+### Update a Service
+```bash
+# Edit values
+nano environments/local/authentik-values.yaml
+
+# Apply changes
+helmfile.exe -e local apply
+
+# Or update specific service only
+helm upgrade authentik authentik/authentik \
+  --namespace authentik \
+  --values environments/local/authentik-values.yaml
+```
+
+### Access Authentik
+```bash
+# Generate recovery key
+kubectl exec -it -n authentik $(kubectl get pod -n authentik -l app.kubernetes.io/name=authentik-server -o name | head -1) -- \
+  ak create_recovery_key 10 akadmin
+
+# Output will be: /recovery/use-token/***********/
+# Full URL: http://auth.local.test/recovery/use-token/***********/
+```
+
+## Deployment Principles
+
+### ✅ DO
+- Use official Helm charts when available
+- Store configuration in environment-specific values files
+- Use Kubernetes DNS for service discovery
+- Keep secrets in gitignored files or use external-secrets
+- Document everything in Markdown
+
+### ❌ DON'T
+- Write bash scripts for deployment
+- Hardcode IPs or passwords
+- Put secrets in Git
+- Create custom chart wrappers unnecessarily
+- Mix production and local configs
 
 ## Troubleshooting
 
-**503 Errors**: Usually PostgreSQL auth issue
-- Check password sync
-- Restart pods if needed
+### Pods Not Starting
+```bash
+kubectl describe pod -n <namespace> $(kubectl get pod -n <namespace> -l app.kubernetes.io/name=<pod-name> -o name | head -1)
+```
 
-**OAuth Issues**: Check in Authentik admin UI
-- Verify Google OAuth source exists
-- Check access policy
+### Database Connection Issues
+```bash
+# Test PostgreSQL
+kubectl exec -it -n infrastructure $(kubectl get pod -n infrastructure -l app.kubernetes.io/name=postgresql-postgresql -o name | head -1) -- psql -U postgres
+
+# Check init job logs
+kubectl logs -n infrastructure $(kubectl get job -n infrastructure -l app.kubernetes.io/name=postgresql-init -o name | head -1)
+```
+
+### Authentik Login Issues
+```bash
+# Create recovery key
+kubectl exec -it -n authentik $(kubectl get pod -n authentik -l app.kubernetes.io/name=authentik-server -o name | head -1) -- ak create_recovery_key 10 akadmin
+```
+
+## Migration Notes
+
+**What Changed:**
+- ✅ Removed 16 bash scripts → Pure Helm deployment
+- ✅ Removed hardcoded IPs → Kubernetes DNS
+- ✅ Removed init.sql from values → Proper Job chart
+- ✅ Removed custom Authentik wrapper → Official chart
+- ✅ Added environment separation → local/production
+
+**Benefits:**
+- Simpler deployment (just Helm commands)
+- Better separation of concerns
+- Production-ready from day one
+- No custom tooling to maintain
+- Easier to understand and debug
 
 ## Important Notes
 
-- CSRF issues in Authentik API - use UI instead
-- Manual Authentik deployment (not via ArgoCD)
-- All services require auth except status page
-- Repository must stay clean - no temp files
+- **No ArgoCD**: Direct Helm deployment (can add later if needed)
+- **LoadBalancer**: MetalLB provides IPs on local cluster
+- **Storage**: MicroK8s hostpath-storage (microk8s-hostpath) for local development
+- **DNS**: Add hosts file entries for *.local.test domains
+
+## Future Additions
+
+When ready to add more features:
+
+1. **ArgoCD**: GitOps automation
+2. **External Secrets**: Better secrets management
+3. **Monitoring**: Prometheus + Grafana
+4. **Backups**: Velero for cluster backups
+5. **CI/CD**: GitHub Actions for automated deployments
+
+## Success Criteria
+
+✅ All pods running and healthy
+✅ Databases initialized with proper users
+✅ Authentik accessible via browser
+✅ No bash scripts in repository
+✅ No hardcoded secrets or IPs
+✅ Clean, modern Helm-based deployment

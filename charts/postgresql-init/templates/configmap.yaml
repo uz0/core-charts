@@ -1,0 +1,75 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "postgresql-init.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "postgresql-init.labels" . | nindent 4 }}
+data:
+  init.sh: |
+    #!/bin/bash
+    set -e
+
+    echo "Starting PostgreSQL initialization..."
+    echo "Connecting to: ${PGHOST}:${PGPORT}"
+
+    # Wait for PostgreSQL to be ready
+    until pg_isready -h ${PGHOST} -p ${PGPORT} -U ${PGUSER}; do
+      echo "Waiting for PostgreSQL to be ready..."
+      sleep 2
+    done
+
+    echo "PostgreSQL is ready. Starting database initialization..."
+
+    {{- range .Values.databases }}
+    echo "----------------------------------------"
+    echo "Creating database: {{ .name }}"
+    echo "Creating user: {{ .user }}"
+
+    # Create database and role using safely escaped identifiers/literals
+    psql -v ON_ERROR_STOP=1 --username "${PGUSER}" --dbname postgres \
+      -v db_name={{ .name | quote }} \
+      -v db_user={{ .user | quote }} \
+      -v db_password={{ .password | quote }} <<-'EOSQL'
+      SELECT format('CREATE DATABASE %I', :'db_name')
+      WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = :'db_name')
+      \gexec
+
+      DO $$
+      BEGIN
+        IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = :'db_user') THEN
+          EXECUTE format('CREATE ROLE %I WITH LOGIN PASSWORD %L', :'db_user', :'db_password');
+        ELSE
+          EXECUTE format('ALTER ROLE %I WITH LOGIN PASSWORD %L', :'db_user', :'db_password');
+        END IF;
+      END
+      $$;
+
+      SELECT format('GRANT ALL PRIVILEGES ON DATABASE %I TO %I', :'db_name', :'db_user')
+      \gexec;
+
+      SELECT format('ALTER DATABASE %I OWNER TO %I', :'db_name', :'db_user')
+      \gexec;
+    EOSQL
+
+    # Connect to the database and set permissions with quoted identifiers
+    psql -v ON_ERROR_STOP=1 --username "${PGUSER}" --dbname postgres \
+      -v db_name={{ .name | quote }} \
+      -v db_user={{ .user | quote }} <<-'EOSQL'
+      \connect :"db_name"
+
+      SELECT format('GRANT ALL ON SCHEMA public TO %I', :'db_user')
+      \gexec;
+      SELECT format('ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO %I', :'db_user')
+      \gexec;
+      SELECT format('ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO %I', :'db_user')
+      \gexec;
+      SELECT format('ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON FUNCTIONS TO %I', :'db_user')
+      \gexec;
+    EOSQL
+
+    echo "✓ Database {{ .name }} initialized successfully"
+    {{- end }}
+
+    echo "----------------------------------------"
+    echo "All databases initialized successfully!"

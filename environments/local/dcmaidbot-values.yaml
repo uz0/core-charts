@@ -1,0 +1,44 @@
+# DCMaidBot configuration for local environment
+
+image:
+  repository: ghcr.io/dcversus/dcmaidbot
+  tag: "latest"
+  pullPolicy: Always
+
+replicaCount: 1
+
+# REQUIRED: Telegram Bot Configuration
+botToken: ""
+adminIds: ""
+
+# Database connection (auto-generates DATABASE_URL)
+database:
+  host: "postgresql.infrastructure.svc.cluster.local"
+  port: "5432"
+  name: "dcmaidbot"
+  user: "dcmaidbot_user"
+  password: ""
+
+# Redis connection (auto-generates REDIS_URL)
+redis:
+  host: "redis-master.infrastructure.svc.cluster.local"
+  port: "6379"
+  password: ""
+
+# Optional: OpenAI API Key (using placeholder for now)
+openaiApiKey: ""
+
+# Application Configuration
+webhookMode: "false"  # Use polling for local
+nudgeSecret: ""
+
+resources:
+  requests:
+    memory: 128Mi
+    cpu: 100m
+  limits:
+    memory: 256Mi
+    cpu: 250m
+
+ingress:
+  enabled: false  # Not needed for polling mode

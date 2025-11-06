@@ -1,0 +1,110 @@
+# Local environment configuration (MicroK8s / minikube / kind)
+# For development and testing
+
+# Infrastructure toggles
+certManager:
+  enabled: false  # Already installed on cluster
+
+ingressNginx:
+  enabled: true
+  serviceType: LoadBalancer  # MetalLB provides LoadBalancer on local cluster
+
+# Storage class for local development
+storageClass: "microk8s-hostpath"  # MicroK8s default storage class
+
+# PostgreSQL configuration
+postgresql:
+  enabled: true
+  username: postgres
+  password: ""
+  storageSize: 5Gi
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 250m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+  databases:
+    - name: core_dev
+      user: core_dev_user
+      password: ""
+    - name: core_prod
+      user: core_prod_user
+      password: ""
+    - name: authentik
+      user: authentik_user
+      password: ""
+    - name: dcmaidbot
+      user: dcmaidbot_user
+      password: ""
+
+# Redis configuration
+redis:
+  enabled: true
+  password: ""
+  storageSize: 1Gi
+  maxMemory: 128mb
+  resources:
+    requests:
+      memory: 128Mi
+      cpu: 100m
+    limits:
+      memory: 256Mi
+      cpu: 250m
+
+# MinIO configuration
+minio:
+  enabled: false  # Disable for local to save resources
+
+# Monitoring configuration
+monitoring:
+  enabled: false  # Disable for local to save resources
+  prometheus:
+    retention: 2d
+    storage: 5Gi
+  grafana:
+    adminPassword: ""
+    ingress:
+      enabled: false
+  loki:
+    storage: 5Gi
+
+# Authentik configuration
+authentik:
+  enabled: true
+  domain: auth.local.test
+  postgresql:
+    external: true
+    host: postgresql.infrastructure.svc.cluster.local
+    database: authentik
+    user: authentik_user
+  redis:
+    external: true
+    host: redis-master.infrastructure.svc.cluster.local
+
+# ArgoCD configuration
+argocd:
+  enabled: false  # Use helmfile directly for local development
+
+# Application configurations
+applications:
+  corePipeline:
+    prod:
+      enabled: false  # Disabled for local - only using dev
+      domain: api.local.test
+      replicas: 1
+      image:
+        tag: latest
+    dev:
+      enabled: true
+      domain: api-dev.local.test
+      replicas: 1
+      image:
+        tag: dev-latest
+
+  dcmaidbot:
+    enabled: true
+    replicas: 1
+    image:
+      tag: latest

@@ -1,0 +1,62 @@
+# Core Pipeline - Production environment overrides
+
+image:
+  repository: ghcr.io/uz0/core-pipeline
+  tag: "main-bc7ada7"
+  pullPolicy: Always
+
+replicaCount: 2  # High availability
+
+env:
+  - name: NODE_ENV
+    value: "production"
+  - name: DATABASE_URL
+    valueFrom:
+      secretKeyRef:
+        name: core-pipeline-prod-db
+        key: url
+  - name: REDIS_URL
+    valueFrom:
+      secretKeyRef:
+        name: core-pipeline-prod-redis
+        key: url
+  - name: KAFKA_BROKERS
+    value: "kafka-cluster-kafka-bootstrap.infrastructure.svc.cluster.local:9092"
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+  hosts:
+    - host: core-pipeline.theedgestory.org
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: core-pipeline-prod-tls
+      hosts:
+        - core-pipeline.theedgestory.org
+
+resources:
+  requests:
+    memory: 512Mi
+    cpu: 500m
+  limits:
+    memory: 1Gi
+    cpu: 1000m
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+monitoring:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    interval: 30s

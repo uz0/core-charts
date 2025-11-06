@@ -1,0 +1,50 @@
+# Core Pipeline - Development environment overrides for production cluster
+
+image:
+  repository: ghcr.io/yourusername/core-pipeline
+  tag: ""  # Set via CI/CD
+  pullPolicy: Always
+
+replicaCount: 1
+
+env:
+  NODE_ENV: "development"
+  KAFKA_BROKERS: "kafka-cluster-kafka-bootstrap.infrastructure.svc.cluster.local:9092"
+  LOG_LEVEL: "debug"
+
+externalSecrets:
+  - envName: DATABASE_URL
+    secretName: core-pipeline-dev-db
+    secretKey: url
+  - envName: REDIS_URL
+    secretName: core-pipeline-dev-redis
+    secretKey: url
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  hosts:
+    - host: core-pipeline.dev.theedgestory.org
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: core-pipeline-dev-tls
+      hosts:
+        - core-pipeline.dev.theedgestory.org
+
+resources:
+  requests:
+    memory: 256Mi
+    cpu: 250m
+  limits:
+    memory: 512Mi
+    cpu: 500m
+
+autoscaling:
+  enabled: false
+
+monitoring:
+  enabled: true

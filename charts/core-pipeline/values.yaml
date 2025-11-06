@@ -1,0 +1,162 @@
+# Core Pipeline - Base Configuration
+# Environment-specific overrides: values.dev.yml, values.prod.yml
+
+replicaCount: 2
+
+image:
+  repository: ghcr.io/uz0/core-pipeline
+  pullPolicy: IfNotPresent
+  tag: latest  # Override via dev.tag.yaml or prod.tag.yaml
+
+imagePullSecrets:
+  - name: ghcr-secret
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/path: "/metrics"
+  prometheus.io/port: "3000"
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000
+
+securityContext:
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+  allowPrivilegeEscalation: false
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3000
+
+ingress:
+  enabled: false
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/service-upstream: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+  hosts:
+    - host: core-pipeline.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: cloudflare-origin-tls
+      hosts:
+        - core-pipeline.example.com
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+# Health checks
+livenessProbe:
+  httpGet:
+    path: /health/liveness
+    port: 3000
+  initialDelaySeconds: 60
+  periodSeconds: 30
+  timeoutSeconds: 10
+  failureThreshold: 5
+
+readinessProbe:
+  httpGet:
+    path: /health/readiness
+    port: 3000
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 5
+
+startupProbe:
+  httpGet:
+    path: /health
+    port: 3000
+  initialDelaySeconds: 15
+  periodSeconds: 10
+  timeoutSeconds: 10
+  failureThreshold: 30
+  successThreshold: 1
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+# Optional init containers executed before the main application pod starts
+initContainers: []
+
+# Environment variables (common across all environments)
+env:
+  # Application
+  PORT: "3000"
+  ENABLE_SWAGGER: "true"
+  API_PREFIX: ""
+  SWAGGER_ENABLED: "true"
+  SWAGGER_PATH: "swagger"
+
+  # Observability
+  METRICS_ENABLED: "true"
+  METRICS_PREFIX: core_pipeline
+  TRACING_ENABLED: "true"
+  SERVICE_VERSION: "1.0.0"
+  OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo.monitoring:4318
+
+# External secrets (credentials from infrastructure)
+# Override in values.dev.yml and values.prod.yml with environment-specific secrets
+externalSecrets: []
+
+# Optional features
+configMap:
+  enabled: true
+  data: {}
+
+persistence:
+  enabled: false
+  storageClass: ""
+  accessMode: ReadWriteOnce
+  size: 8Gi
+  mountPath: /data
+
+networkPolicy:
+  enabled: false
+  policyTypes:
+    - Ingress
+    - Egress
+
+serviceMonitor:
+  enabled: false
+  interval: 30s
+  scrapeTimeout: 10s
+
+podDisruptionBudget:
+  enabled: false
+  minAvailable: 1
+
+# GitHub Container Registry credentials
+# Provide via sealed-secrets or CI/CD
+ghcrCredentials:
+  username: uz0
+  password: ""

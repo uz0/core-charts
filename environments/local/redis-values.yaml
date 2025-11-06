@@ -1,0 +1,29 @@
+# Redis configuration for local environment
+
+architecture: standalone
+
+auth:
+  enabled: true
+  password: ""
+
+master:
+  resources:
+    requests:
+      memory: 128Mi
+      cpu: 100m
+    limits:
+      memory: 256Mi
+      cpu: 250m
+
+  persistence:
+    enabled: true
+    size: 1Gi
+    storageClass: "microk8s-hostpath"
+
+commonConfiguration: |-
+  maxmemory 128mb
+  maxmemory-policy allkeys-lru
+  appendonly yes
+
+metrics:
+  enabled: false

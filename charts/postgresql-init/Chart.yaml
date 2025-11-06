@@ -1,0 +1,12 @@
+apiVersion: v2
+name: postgresql-init
+description: PostgreSQL database initialization job
+type: application
+version: 1.0.0
+appVersion: "16.0"
+keywords:
+  - postgresql
+  - database
+  - init
+maintainers:
+  - name: The Edge Story

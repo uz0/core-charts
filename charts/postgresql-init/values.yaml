@@ -1,0 +1,51 @@
+# PostgreSQL initialization configuration
+# Creates databases and users after PostgreSQL deployment
+
+postgresql:
+  host: postgresql.infrastructure.svc.cluster.local
+  port: 5432
+  adminUser: postgres
+  adminPassword: ""  # Deprecated - use secretName/secretKey
+  secretName: ""
+  secretKey: ""
+
+# Databases to create
+# Each database gets:
+# - A dedicated database
+# - A dedicated user with full permissions
+# - Proper schema ownership
+databases: []
+  # Example:
+  # - name: core_dev
+  #   user: core_dev_user
+  #   password: secure-password-here
+  # - name: core_prod
+  #   user: core_prod_user
+  #   password: secure-password-here
+
+# Job configuration
+job:
+  image:
+    repository: postgres
+    tag: "16-alpine"
+    pullPolicy: IfNotPresent
+
+  resources:
+    requests:
+      memory: 64Mi
+      cpu: 50m
+    limits:
+      memory: 128Mi
+      cpu: 100m
+
+  # Retry configuration
+  backoffLimit: 3
+  ttlSecondsAfterFinished: 86400  # Clean up after 24 hours
+
+  # Security context
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 999  # postgres user
+    fsGroup: 999
+    seccompProfile:
+      type: RuntimeDefault

@@ -1,0 +1,23 @@
+# PostgreSQL initialization for local environment
+
+postgresql:
+  host: postgresql.infrastructure.svc.cluster.local
+  port: 5432
+  adminUser: postgres
+  adminPassword: ""
+  secretName: "postgresql"
+  secretKey: "postgres-password"
+
+databases:
+  - name: core_dev
+    user: core_dev_user
+    password: ""
+  - name: core_prod
+    user: core_prod_user
+    password: ""
+  - name: authentik
+    user: authentik_user
+    password: ""
+  - name: dcmaidbot
+    user: dcmaidbot_user
+    password: ""

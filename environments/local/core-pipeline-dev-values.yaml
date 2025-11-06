@@ -1,0 +1,85 @@
+# Core Pipeline - Development environment overrides for local cluster
+
+image:
+  repository: ghcr.io/uz0/core-pipeline
+  tag: "latest"  # Using latest until dev-latest is available
+  pullPolicy: Always
+
+replicaCount: 1
+
+initContainers:
+  - name: wait-for-redis
+    image: busybox:1.36
+    command:
+      - sh
+      - -c
+      - |
+        until nc -z "$REDIS_HOST" "$REDIS_PORT"; do
+          echo "Waiting for Redis at ${REDIS_HOST}:${REDIS_PORT}..."
+          sleep 2
+        done
+    env:
+      - name: REDIS_HOST
+        value: "redis-master.infrastructure.svc.cluster.local"
+      - name: REDIS_PORT
+        value: "6379"
+
+# Disable externalSecrets for local - use env vars directly
+externalSecrets: []
+
+env:
+  NODE_ENV: "development"
+
+  # Database Configuration (Kubernetes-native pattern)
+  DB_HOST: "postgresql.infrastructure.svc.cluster.local"
+  DB_PORT: "5432"
+  DB_USERNAME: "core_dev_user"
+  DB_DATABASE: "core_dev"
+  DB_NAME: "core_dev"
+  DB_USER: "core_dev_user"
+  # Fallback: Full DATABASE_URL for apps that need it (provided via secrets file)
+  DATABASE_URL: ""
+  # Legacy/Postgres-compatible variables expected by application configs (secret values supplied separately)
+  POSTGRES_HOST: "postgresql.infrastructure.svc.cluster.local"
+  POSTGRES_PORT: "5432"
+  POSTGRES_USER: "core_dev_user"
+  POSTGRES_DB: "core_dev"
+
+  # Redis Configuration (Kubernetes-native pattern)
+  REDIS_HOST: "redis-master.infrastructure.svc.cluster.local"
+  REDIS_PORT: "6379"
+  # Fallback: Full REDIS_URL for apps that need it (provided via secrets file)
+  REDIS_URL: ""
+
+  # Kafka Configuration (if needed)
+  KAFKA_ENABLED: "false"
+  KAFKA_CLIENT_ID: ""
+  KAFKA_BROKER: ""
+  KAFKA_BROKERS: ""
+  KAFKA_CONSUMER_GROUP: ""
+  KAFKA_GROUP_ID: ""
+
+  # Application Configuration
+  LOG_LEVEL: "debug"
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations: {}
+  hosts:
+    - host: api-dev.local.test
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+resources:
+  requests:
+    memory: 128Mi
+    cpu: 100m
+  limits:
+    memory: 256Mi
+    cpu: 250m
+
+autoscaling:
+  enabled: false

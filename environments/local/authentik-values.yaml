@@ -1,0 +1,72 @@
+# Authentik values for local environment
+# Using official authentik/authentik chart directly
+
+# Global Authentik configuration
+authentik:
+  # Required: Secret key for Authentik (generate with: openssl rand -hex 32)
+  secret_key: ""
+
+  # Error reporting
+  error_reporting:
+    enabled: false
+
+  # PostgreSQL connection
+  postgresql:
+    host: "postgresql.infrastructure.svc.cluster.local"
+    port: 5432
+    name: "authentik"
+    user: "authentik_user"
+    password: ""
+
+  # Redis connection
+  redis:
+    host: "redis-master.infrastructure.svc.cluster.local"
+    port: 6379
+    password: ""
+
+# Server configuration
+server:
+  replicas: 1
+
+  ingress:
+    enabled: true
+    ingressClassName: "nginx"
+    annotations: {}
+    hosts:
+      - auth.local.test
+    paths:
+      - "/"
+    tls: []  # No TLS for local
+
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+
+# Worker configuration
+worker:
+  replicas: 1
+
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+
+# Disable built-in PostgreSQL and Redis (we use external)
+postgresql:
+  enabled: false
+
+redis:
+  enabled: false
+
+# Bootstrap admin user
+bootstrap:
+  enabled: true
+  email: "admin@local.test"
+  password: ""

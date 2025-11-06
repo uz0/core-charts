@@ -1,0 +1,32 @@
+# Redis configuration for production environment
+
+architecture: standalone
+
+auth:
+  enabled: true
+  password: ""  # Set via secrets
+  existingSecret: "redis-admin"
+
+master:
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 200m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+
+  persistence:
+    enabled: true
+    size: 5Gi
+    storageClass: "standard"
+
+commonConfiguration: |-
+  maxmemory 512mb
+  maxmemory-policy allkeys-lru
+  appendonly yes
+
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true

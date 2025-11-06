@@ -39,51 +39,51 @@ spec:
         - name: BOT_TOKEN
           valueFrom:
             secretKeyRef:
-              name: dcmaidbot-secrets
+              name: {{ include "dcmaidbot.fullname" . }}-secrets
               key: bot-token
         - name: ADMIN_IDS
           valueFrom:
             secretKeyRef:
-              name: dcmaidbot-secrets
+              name: {{ include "dcmaidbot.fullname" . }}-secrets
               key: admin-ids
         - name: DATABASE_URL
           valueFrom:
             secretKeyRef:
-              name: dcmaidbot-secrets
+              name: {{ include "dcmaidbot.fullname" . }}-secrets
               key: database-url
         - name: OPENAI_API_KEY
           valueFrom:
             secretKeyRef:
-              name: dcmaidbot-secrets
+              name: {{ include "dcmaidbot.fullname" . }}-secrets
               key: openai-api-key
         - name: REDIS_URL
           valueFrom:
             secretKeyRef:
-              name: dcmaidbot-secrets
+              name: {{ include "dcmaidbot.fullname" . }}-secrets
               key: redis-url
               optional: true
         - name: WEBHOOK_MODE
           valueFrom:
             secretKeyRef:
-              name: dcmaidbot-secrets
+              name: {{ include "dcmaidbot.fullname" . }}-secrets
               key: webhook-mode
               optional: true
         - name: WEBHOOK_URL
           valueFrom:
             secretKeyRef:
-              name: dcmaidbot-secrets
+              name: {{ include "dcmaidbot.fullname" . }}-secrets
               key: webhook-url
               optional: true
         - name: WEBHOOK_SECRET
           valueFrom:
             secretKeyRef:
-              name: dcmaidbot-secrets
+              name: {{ include "dcmaidbot.fullname" . }}-secrets
               key: webhook-secret
               optional: true
         - name: NUDGE_SECRET
           valueFrom:
             secretKeyRef:
-              name: dcmaidbot-nudge-secret
+              name: {{ include "dcmaidbot.fullname" . }}-nudge-secret
               key: NUDGE_SECRET
         resources:
           {{- toYaml .Values.resources | nindent 10 }}

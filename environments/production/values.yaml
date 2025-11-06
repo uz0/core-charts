@@ -1,0 +1,117 @@
+# Production environment configuration
+# For real Kubernetes clusters (Hetzner, AWS, GKE, etc.)
+
+# Infrastructure toggles
+certManager:
+  enabled: true
+
+ingressNginx:
+  enabled: true
+  serviceType: LoadBalancer  # Cloud load balancer
+
+# Storage class for production
+# Adjust based on your cloud provider:
+# - AWS: gp3
+# - GKE: standard-rwo
+# - Azure: managed-premium
+# - Hetzner: hcloud-volumes
+storageClass: "standard"
+
+# PostgreSQL configuration
+postgresql:
+  enabled: true
+  username: postgres
+  password: ""  # MUST be set via secrets or environment variable
+  storageSize: 20Gi
+  resources:
+    requests:
+      memory: 1Gi
+      cpu: 500m
+    limits:
+      memory: 2Gi
+      cpu: 1000m
+  databases:
+    - name: core_dev
+      user: core_dev_user
+      password: ""  # Set via secrets
+    - name: core_prod
+      user: core_prod_user
+      password: ""  # Set via secrets
+    - name: authentik
+      user: authentik_user
+      password: ""  # Set via secrets
+    - name: dcmaidbot
+      user: dcmaidbot_user
+      password: ""  # Set via secrets
+
+# Redis configuration
+redis:
+  enabled: true
+  password: ""  # MUST be set via secrets
+  storageSize: 5Gi
+  maxMemory: 512mb
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 200m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+
+# MinIO configuration
+minio:
+  enabled: true
+
+# Monitoring configuration
+monitoring:
+  enabled: true
+  prometheus:
+    retention: 15d
+    storage: 50Gi
+  grafana:
+    adminPassword: ""  # Set via secrets
+    ingress:
+      enabled: true
+      hosts:
+        - grafana.theedgestory.org
+  loki:
+    storage: 50Gi
+
+# Authentik configuration
+authentik:
+  enabled: true
+  domain: auth.theedgestory.org
+  postgresql:
+    external: true
+    host: postgresql.infrastructure.svc.cluster.local
+    database: authentik
+    user: authentik_user
+  redis:
+    external: true
+    host: redis-master.infrastructure.svc.cluster.local
+
+# ArgoCD configuration
+argocd:
+  enabled: true  # Enable GitOps for production
+
+# Application configurations
+applications:
+  corePipeline:
+    prod:
+      enabled: true
+      domain: core-pipeline.theedgestory.org
+      replicas: 2
+      image:
+        tag: ""  # Set via CI/CD
+    dev:
+      enabled: true
+      domain: core-pipeline.dev.theedgestory.org
+      replicas: 1
+      image:
+        tag: ""  # Set via CI/CD
+
+  dcmaidbot:
+    enabled: true
+    replicas: 1
+    image:
+      tag: ""  # Set via CI/CD

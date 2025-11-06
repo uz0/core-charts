@@ -1,0 +1,77 @@
+# DCMaidBot configuration for production environment
+
+image:
+  repository: ghcr.io/uz0/dcmaidbot
+  tag: ""  # Set via CI/CD
+  pullPolicy: Always
+
+replicaCount: 1
+
+env:
+  - name: BOT_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: dcmaidbot-secrets
+        key: bot-token
+  - name: ADMIN_IDS
+    valueFrom:
+      secretKeyRef:
+        name: dcmaidbot-secrets
+        key: admin-ids
+  - name: DATABASE_URL
+    valueFrom:
+      secretKeyRef:
+        name: dcmaidbot-db
+        key: url
+  - name: REDIS_URL
+    valueFrom:
+      secretKeyRef:
+        name: dcmaidbot-redis
+        key: url
+  - name: OPENAI_API_KEY
+    valueFrom:
+      secretKeyRef:
+        name: dcmaidbot-secrets
+        key: openai-api-key
+  - name: WEBHOOK_MODE
+    value: "true"
+  - name: WEBHOOK_URL
+    value: "https://dcmaidbot.theedgestory.org/webhook"
+  - name: WEBHOOK_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: dcmaidbot-secrets
+        key: webhook-secret
+  - name: NUDGE_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: dcmaidbot-secrets
+        key: nudge-secret
+
+resources:
+  requests:
+    memory: 256Mi
+    cpu: 200m
+  limits:
+    memory: 512Mi
+    cpu: 500m
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  hosts:
+    - host: dcmaidbot.theedgestory.org
+      paths:
+        - path: /webhook
+          pathType: Prefix
+        - path: /health
+          pathType: Prefix
+        - path: /version
+          pathType: Prefix
+  tls:
+    - secretName: dcmaidbot-tls
+      hosts:
+        - dcmaidbot.theedgestory.org

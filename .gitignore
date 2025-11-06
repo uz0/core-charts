@@ -1,26 +1,34 @@
+# Secrets - NEVER COMMIT THESE!
+environments/*/secrets/values.yaml
+environments/*/*.secrets.yaml
+*.secret.yaml
+*.secrets.yaml
+.env
+.env.*
+!.env.example
+
+# Helm
+charts/*/charts/
+charts/*/*.lock
+*.tgz
+
+# Helmfile
+helmfile.lock
+
+# Kubernetes
+kubeconfig
+*.kubeconfig
+
 # macOS
 .DS_Store
 .AppleDouble
 .LSOverride
-
-# Thumbnails
 ._*
-
-# Files that might appear in the root of a volume
 .DocumentRevisions-V100
 .fseventsd
 .Spotlight-V100
 .TemporaryItems
 .Trashes
-.VolumeIcon.icns
-.com.apple.timemachine.donotpresent
-
-# Directories potentially created on remote AFP share
-.AppleDB
-.AppleDesktop
-Network Trash Folder
-Temporary Items
-.apdisk
 
 # IDE
 .vscode/
@@ -28,35 +36,27 @@ Temporary Items
 *.swp
 *.swo
 *~
+*.iml
 
 # Logs
 *.log
+scripts/*.log
 
 # Temp files
 *.tmp
 *.temp
+*.bak
+*.backup
+*.old
 
-# Secrets and sensitive files
-*.secret
-*.secrets
+# Backups
+backup/
+*.sql.gz
+
+# Keys and certificates (if not managed by cert-manager)
 *.key
 *.pem
 *.crt
 *.cer
 *.p12
 *.pfx
-*-secret.yaml
-*-secrets.yaml
-.env
-.env.*
-!.env.example
-secrets/
-credentials/
-
-# Backup files
-*.bak
-*.backup
-*.old
-
-# Note: Helm chart dependencies (.tgz and charts/) are NOT ignored
-# They must be committed for ArgoCD to work without external repo access
