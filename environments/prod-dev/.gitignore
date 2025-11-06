@@ -1,0 +1,20 @@
+# Environment variables with secrets
+.env
+.env.local
+.env.production
+
+# Any local files with secrets
+secrets.*
+*.key
+*.pem
+
+# Temporary files
+*.tmp
+*.bak
+
+# Log files
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
