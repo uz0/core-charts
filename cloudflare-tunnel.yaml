@@ -1,0 +1,51 @@
+# Cloudflare Tunnel Configuration
+# This config should be added to your Cloudflare Zero Trust dashboard
+
+# Tunnel ID: Generate from Cloudflare dashboard
+# Origin: Your Kubernetes server (46.62.223.198)
+
+ingress:
+  # Authentik SSO
+  - hostname: auth.theedgestory.org
+    service: http://authentik.authentik.svc.cluster.local:80
+    originRequest:
+      noTLSVerify: true
+
+  # Core Pipeline Production
+  - hostname: core-pipeline.theedgestory.org
+    service: http://core-pipeline.core-pipeline-prod.svc.cluster.local:3000
+    originRequest:
+      noTLSVerify: true
+
+  # Core Pipeline Development
+  - hostname: core-pipeline.dev.theedgestory.org
+    service: http://core-pipeline.core-pipeline-dev.svc.cluster.local:3000
+    originRequest:
+      noTLSVerify: true
+
+  # DCMaidBot (if needed)
+  - hostname: dcmaidbot.theedgestory.org
+    service: http://dcmaidbot.dcmaidbot.svc.cluster.local:3000
+    originRequest:
+      noTLSVerify: true
+
+  # Grafana Monitoring
+  - hostname: grafana.theedgestory.org
+    service: http://kube-prometheus-stack-grafana.monitoring.svc.cluster.local:80
+    originRequest:
+      noTLSVerify: true
+
+  # Kubernetes Dashboard (optional)
+  - hostname: k8s.theedgestory.org
+    service: http://kubernetes-dashboard.svc.cluster.local:443
+    originRequest:
+      noTLSVerify: true
+
+  # Catch-all - send to Kubernetes Ingress
+  - hostname: "*.theedgestory.org"
+    service: http://ingress-nginx-controller.ingress-nginx.svc.cluster.local:80
+    originRequest:
+      noTLSVerify: true
+
+  # Final catch-all
+  - service: http_status:404
